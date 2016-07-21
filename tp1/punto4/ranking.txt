@@ -1,0 +1,30 @@
+--------------------------------------------------
+	RANKING 	por Juan Cardona
+--------------------------------------------------
+LOS 10 TÉRMINOS MÁS FRECUENTES
+
+	TERMINO - CF
+	univers - 2621
+	var - 2317
+	nacional - 1740
+	cienci - 1534
+	estudi - 1434
+	carrer - 1381
+	facult - 1361
+	function - 1330
+	academ - 1217
+	raqu - 1128
+
+LOS 10 TÉRMINOS MENOS FRECUENTES
+
+	TERMINO - CF
+	mar205 - 1
+	ginzburg - 1
+	canep - 1
+	hermand - 1
+	42045902 - 1
+	porven - 1
+	wednesday - 1
+	1412005 - 1
+	xajaxisload - 1
+	sitiohistori - 1

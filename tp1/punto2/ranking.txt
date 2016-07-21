@@ -1,0 +1,30 @@
+--------------------------------------------------
+	RANKING 	por Juan Cardona
+--------------------------------------------------
+LOS 10 TÉRMINOS MÁS FRECUENTES
+
+	TERMINO - CF
+	universidad - 2429
+	var - 2316
+	nacional - 1591
+	facultad - 1357
+	function - 1330
+	ciencias - 1101
+	color - 1079
+	2012 - 1053
+	educacion - 949
+	investigacion - 940
+
+LOS 10 TÉRMINOS MENOS FRECUENTES
+
+	TERMINO - CF
+	ginzburg - 1
+	prestadoras - 1
+	antiparasitarias - 1
+	ordenadora - 1
+	http://www.prolab.unlp.edu.ar/prolabbeta/img/cuadro2 - 1
+	x5000ijj - 1
+	42045902 - 1
+	considerede - 1
+	provisoriamente - 1
+	wednesday - 1
