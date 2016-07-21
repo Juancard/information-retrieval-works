@@ -1,8 +1,8 @@
 
 
-<h3>**Trabajo Práctico**</h3>
+**<h3>Trabajo Práctico</h3>**
 
-<h1>**Tratamiento y Análisis de Textos**</h1>
+**<h1>Tratamiento y Análisis de Textos</h1>**
 
 
 
@@ -11,7 +11,9 @@ Juan Cardona (122124)
 juan\_cardona@outlook.com
 
 
-**1)**La información extraída mediante el programa realizado en este
+**<h3>PUNTO 1</h3>**
+
+La información extraída mediante el programa realizado en este
 ejercicio provee una representación del campus dado de manera tal que se
 puedan implementar mecanismos de recuperación sobre los archivos de
 dicho campus.
@@ -56,14 +58,16 @@ De esta manera se obtienen un conjunto de términos normalizados que
 representan al campus dado y a partir de los cuales se pueden realizar
 búsquedas.
 
-**2)**Para este ejercicio se extrajeron una serie de tokens en base a
+**<h3>PUNTO 2</h3>**
+
+Para este ejercicio se extrajeron una serie de tokens en base a
 expresiones regulares definidas. Para esto se creo un nuevo nuevo modulo
 'regex\_tokenizer.py' el cual define una clase RegexTokenizer que es
 instanciada por el 'lex\_analyser.py'.
 
 De esta manera se extraen:
 
-- <h4>Abreviaturas</h4>:
+- <h4>Abreviaturas</h4>
 
 Se trabajo en base al paper “What is a word. What is a sentence?
 Problems of tokenization ” de Grefenstette y Tapanainen, a partir del
@@ -82,19 +86,19 @@ efectivas para el corpus dado:
 
 `([A-Za-z]\\.)`
 
-- <h4>E-Mails</h4>:
+- <h4>E-Mails</h4>
 
 Se confeccionó la siguiente expresión regular:
 
-[a-zA-Z0-9!\#\\\$%&'\\\*\\+\\-\\/=\\?\\\^\_\`{\\|}\~\\.]+@[a-z0-9\\-]+\\.[a-z]+(?:\\.[a-z]+)+
+``[a-zA-Z0-9!\#\\\$%&'\\\*\\+\\-\\/=\\?\\\^\_\`{\\|}\~\\.]+@[a-z0-9\\-]+\\.[a-z]+(?:\\.[a-z]+)+``
 
-- <h4>URLs</h4>:
+- <h4>URLs</h4>
 
 Se confeccionó la siguiente expresión regular:
 
 `(https?:\\/\\/(?:www\\.|(?!www))[a-z0-9\\.]+\\.[a-z0-9\\/\\?=]{2,}|www\\.[a-z0-9]+\\.[a-z0-9\\/\\?=]{2,})`
 
-- <h4>Números</h4>:
+- <h4>Números</h4>
 
 Basado nuevamente en el paper de Grefenstette y Tapanainen, del mismo se
 seleccionaron las siguientes expresiones:
@@ -116,7 +120,7 @@ Mediante la siguiente expresion regular:
 Asimismo se decidió extraer las siguientes expresiones y descartarlas
 del vocabulario del corpus:
 
-- <h4>Caracteres especiales de HTML</h4>:
+- <h4>Caracteres especiales de HTML</h4>
 
 Para lo cual se hizo uso de la siguiente expresión:
 
@@ -127,7 +131,9 @@ dejó de pertenecer al ranking de palabras de mayor frecuencia.
 
 
 
-**3)**Al realizar el analisis léxico sobre la colección T12012-qm se ha
+**<h3>PUNTO 3</h3>**
+
+Al realizar el analisis léxico sobre la colección T12012-qm se ha
 podido visualizar lo siguiente:
 
 - Existe un alto número de fórmulas químicas que se pierden al tokenizar
@@ -168,7 +174,9 @@ g·cm-3'), 'β', '\>'(ejemplo: 'H2O \> D2O'), '+'.
 
 
 
-**4)** Para el stemmer se seleccionó el algoritmo de Snowball en su
+**<h3>PUNTO 4</h3>** 
+
+Para el stemmer se seleccionó el algoritmo de Snowball en su
 versión en castellano y se aplicó con el mismo analizador léxico y
 corpus del ejercicio 1.
 
@@ -190,13 +198,15 @@ misma manera, tal ocurre para 'casos' y 'casa' (ambos traducidos a
 
 
 
-**5)** En este ejercicio se propone verificar la ley de Zipf mediante el
+**<h3>PUNTO 5</h3>** 
+
+En este ejercicio se propone verificar la ley de Zipf mediante el
 análisis de la novela 'El ingenioso hidalgo don Quijote de la Mancha' de
 Cervantes. Como resultado se obtuvieron los siguientes gráficos:
 
-![Zipf Lineal](/punto5/zipf_lineal.png)
+![Zipf Lineal](https://github.com/Juancard/recuperacion-informacion-works/blob/master/tp1/punto5/zipf_lineal.png)
 
-![Zipf log-log](/punto5/zipf_loglog.png)
+![Zipf log-log](https://github.com/Juancard/recuperacion-informacion-works/blob/master/tp1/punto5/zipf_loglog.png)
 
 
 En el primero de los gráficos se puede observar que, tal como lo enuncia
@@ -215,17 +225,17 @@ se dispone de su frecuencia en el campus.
 Por otro lado, realizando podas sobre los términos más y menos
 frecuentes se obtuvieron los siguientes resultados:
 
-![Zipf Lineal - poda 5%](/punto5/zipf_lineal_poda_05.png)
+![Zipf Lineal - poda 5%](https://github.com/Juancard/recuperacion-informacion-works/blob/master/tp1/punto5/zipf_lineal_poda_05.png)
 
-![Zipf log-log - poda 5%](/punto5/zipf_loglog_poda_05.png)
+![Zipf log-log - poda 5%](https://github.com/Juancard/recuperacion-informacion-works/blob/master/tp1/punto5/zipf_loglog_poda_05.png)
 
-![Zipf Lineal - poda 10%](/punto5/zipf_lineal_poda_10.png)
+![Zipf Lineal - poda 10%](https://github.com/Juancard/recuperacion-informacion-works/blob/master/tp1/punto5/zipf_lineal_poda_10.png)
 
-![Zipf log-log - poda 10%](/punto5/zipf_loglog_poda_10.png)
+![Zipf log-log - poda 10%](https://github.com/Juancard/recuperacion-informacion-works/blob/master/tp1/punto5/zipf_loglog_poda_10.png)
 
-![Zipf Lineal - poda 15%](/punto5/zipf_lineal_poda_15.png)
+![Zipf Lineal - poda 15%](https://github.com/Juancard/recuperacion-informacion-works/blob/master/tp1/punto5/zipf_lineal_poda_15.png)
 
-![Zipf log-log - poda 15%](/punto5/zipf_loglog_poda_15.png)
+![Zipf log-log - poda 15%](https://github.com/Juancard/recuperacion-informacion-works/blob/master/tp1/punto5/zipf_loglog_poda_15.png)
 
 
 Se podría concluir entonces que con una poda del 15% se obtiene una
@@ -234,7 +244,9 @@ curva recta de pendiente negativa.
 
 
 
-**6)** A partir de los calculos realizados en la notebook 'punto6.ipynb'
+**<h3>PUNTO 6</h3>** 
+
+A partir de los calculos realizados en la notebook 'punto6.ipynb'
 se obtiene lo siguiente:
 
 - Según estimación de Zipf: Se omite el **11.12%** de los términos.
@@ -242,10 +254,12 @@ se obtiene lo siguiente:
 - Segun datos reales: Se omite el **7.2%** de los términos.
 
 
-**7)** Para verificar si se cumple la ley de Heaps se ha trazado el
+**<h3>PUNTO 7</h3>** 
+
+Para verificar si se cumple la ley de Heaps se ha trazado el
 siguiente gráfico:
 
-![Estimación de ley de Heaps](/punto7/heaps_quijote.png)
+![Estimación de ley de Heaps](https://github.com/Juancard/recuperacion-informacion-works/blob/master/tp1/punto7/heaps_quijote.png)
 
 Para llevar a cabo la estimación se utilizaron los siguientes
 parámetros:
