@@ -13,6 +13,8 @@ def menu():
 	#Obtengo path
 	try:
 		path = sys.argv[1]
+		if not path.endswith('/'):
+			path += '/'
 		if not(os.path.isdir(sys.argv[1])):
 			print "Path no válido"
 			sys.exit()
@@ -53,7 +55,6 @@ Ejemplos:
 	shortestFileDic = {
 		"length": sys.maxint
 	}
-
 	# Obtengo archivos del directorio
 	archivos = Directorio(path).onlyFiles()
 

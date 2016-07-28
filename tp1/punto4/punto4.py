@@ -32,6 +32,8 @@ def menu():
 		if not(os.path.isdir(sys.argv[1])):
 			print "Path no válido"
 			sys.exit()
+		if not path.endswith('/'):
+			path += '/'
 	except IndexError:
 		print """Uso:
 	{0} /path/a/corpus [/path/to/stop-words.txt]
