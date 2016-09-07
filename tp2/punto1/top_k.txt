@@ -1,0 +1,30 @@
+--------------------------------------------------
+	RANKING 	por Juan Cardona
+--------------------------------------------------
+LOS 10 TÉRMINOS MÁS FRECUENTES
+
+	TERMINO - CF
+	universidad - 2423
+	var - 2316
+	nacional - 1591
+	facultad - 1356
+	function - 1330
+	raquo - 1128
+	ciencias - 1101
+	color - 1079
+	2012 - 1049
+	educacion - 942
+
+LOS 10 TÉRMINOS MENOS FRECUENTES
+
+	TERMINO - CF
+	expansioacuten - 1
+	ginzburg - 1
+	prestadoras - 1
+	antiparasitarias - 1
+	ordenadora - 1
+	x5000ijj - 1
+	42045902 - 1
+	ediunc - 1
+	considerede - 1
+	provisoriamente - 1

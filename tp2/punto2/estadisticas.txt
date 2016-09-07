@@ -1,0 +1,14 @@
+--------------------------------------------------
+	ESTADISTICAS 	por Juan Cardona
+--------------------------------------------------
+Cantidad de Documentos Procesados: 591
+Cantidad de Tokens Extraidos: 472375
+Cantidad de Términos Extraidos: 285763
+Cantidad Promedio de Tokens por Documento: 799.28
+Cantidad Promedio de Términos por Documento: 483.52
+Largo promedio de un término: 9.44
+Cantidad de tokens del documento más corto: 0
+Cantidad de términos del documento más corto: 0
+Cantidad de tokens del documento más largo: 52307
+Cantidad de términos del documento más largo: 23677
+Cantidad de términos que aparecen 1 vez en la colección: 20382
