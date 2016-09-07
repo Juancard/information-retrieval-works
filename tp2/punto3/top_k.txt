@@ -18,13 +18,13 @@ LOS 10 TÉRMINOS MÁS FRECUENTES
 LOS 10 TÉRMINOS MENOS FRECUENTES
 
 	TERMINO - CF
-	interacciones - 1
-	elespodumeno - 1
-	inversas - 1
-	determinadas - 1
-	influencia - 1
-	presente - 1
-	vuelan - 1
-	medida - 1
-	venenosos - 1
-	disilicico - 1
+	00007 - 1
+	001 - 1
+	00115 - 1
+	003 - 1
+	004 - 1
+	00410 - 1
+	0117 - 1
+	0197 - 1
+	0250 - 1
+	043 - 1

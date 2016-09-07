@@ -18,13 +18,13 @@ LOS 10 TÉRMINOS MÁS FRECUENTES
 LOS 10 TÉRMINOS MENOS FRECUENTES
 
 	TERMINO - CF
-	ginzburg - 1
-	prestadoras - 1
-	antiparasitarias - 1
-	ordenadora - 1
-	http://www.prolab.unlp.edu.ar/prolabbeta/img/cuadro2 - 1
-	x5000ijj - 1
-	42045902 - 1
-	considerede - 1
-	provisoriamente - 1
-	wednesday - 1
+	$100 - 1
+	$11 - 1
+	$1200 - 1
+	$1800 - 1
+	$2200 - 1
+	$225 - 1
+	$250 - 1
+	$3 - 1
+	$4 - 1
+	$4,60 - 1

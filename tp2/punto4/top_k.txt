@@ -18,13 +18,13 @@ LOS 10 TÉRMINOS MÁS FRECUENTES
 LOS 10 TÉRMINOS MENOS FRECUENTES
 
 	TERMINO - CF
-	mar205 - 1
-	ginzburg - 1
-	canep - 1
-	hermand - 1
-	42045902 - 1
-	porven - 1
-	wednesday - 1
-	1412005 - 1
-	xajaxisload - 1
-	sitiohistori - 1
+	00000 - 1
+	000000bord - 1
+	0000cc - 1
+	0000ffa - 1
+	0000ffestilo77 - 1
+	0001 - 1
+	0002 - 1
+	000281311 - 1
+	0003 - 1
+	000372411 - 1

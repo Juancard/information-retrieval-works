@@ -61,8 +61,11 @@ class Indexer(object):
 			#------FIN-LEER-ARCHIVO--------------------#
 		
 		#----------------FIN-LEER-COLECCION---------#
+		print "Generando stats"
 		self.endStats()
+		print u"Ordenando vocabulario alfabéticamente"
 		self.vocabulary.setAlphabeticalOrder()
+		print u"Generando id de los términos"
 		self.setTermsId()
 		self.postings.sortByKey()
 
@@ -112,24 +115,23 @@ class Indexer(object):
 		return out
 
 	def updateStats(self, tokens, terms):
-		tokensLength = len(tokens)
-		termsLength = len(terms)
+		tokensLength = len(tokens) + len(terms)
+		termsLength = len(set(terms))
 
 		self.stats["tokens_count"] += tokensLength
-		self.stats["terms_count"] += termsLength
 		self.stats["docs_count"] += 1.0
 
 		# Documento es el mas grande?
 		if tokensLength >= self.stats["longestDoc"]["tokens_count"]:
 			self.stats["longestDoc"]["tokens_count"] = tokensLength
 			self.stats["longestDoc"]["terms_count"] = termsLength
-		
 		# Documento es el mas pequeno?
 		if tokensLength <= self.stats["shortestDoc"]["tokens_count"]:
 			self.stats["shortestDoc"]["tokens_count"] = tokensLength
 			self.stats["shortestDoc"]["terms_count"] = termsLength
 
 	def endStats(self):
+		self.stats["terms_count"] = len(self.vocabulary.content)
 		self.stats["avg_tokens_by_doc"] = self.stats["tokens_count"] / self.stats["docs_count"]
 		self.stats["avg_terms_by_doc"] = self.stats["terms_count"] / self.stats["docs_count"]
 		self.stats["avg_term_length"] = sum([len(key) for key in self.vocabulary.content]) / (len(self.vocabulary.content) + 0.0)
