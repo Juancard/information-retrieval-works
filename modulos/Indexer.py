@@ -115,7 +115,7 @@ class Indexer(object):
 		return out
 
 	def updateStats(self, tokens, terms):
-		tokensLength = len(tokens) + len(terms)
+		tokensLength = len(tokens)
 		termsLength = len(set(terms))
 
 		self.stats["tokens_count"] += tokensLength
