@@ -23,6 +23,19 @@ def getParameters():
 		queriesFile = False
 	return queriesFile
 
+def printRank(docsRank, documents):
+	for q in docsRank:
+		print "-" * 50
+		print "Query:", q
+		print "-" * 50
+		if not docsRank[q]:
+			print "Sin resultados"
+		else:
+			rank = 1
+			for doc in docsRank[q]:
+				print "Rank %d: %s" % (rank, documents.content[doc])
+				rank += 1
+
 def main():
 	# Path en donde se encuentra la data indexada
 	INDEX_DIR = "index_data/"
@@ -58,16 +71,12 @@ def main():
 	else:
 		qm.setQueriesFromConsole(booleanOperators = True)
 
-	br = BooleanRetriever(vocabulary, seqPostings, documents.content)
-	docsRank = br.retrieve(qm.queries)
-	for q in docsRank: 
-		rank = 1
-		print "-" * 25
-		print "Query:", q
-		print "-" * 25
-		for doc in docsRank[q]:
-			print "Rank %d: %s" % (rank, documents.content[doc])
-			rank += 1
+	# Realizo recuperacion
+	if qm.queries:
+		br = BooleanRetriever(vocabulary, seqPostings, documents.content)
+		docsRank = br.retrieve(qm.queries)
+		# Muestro resultados
+		printRank(docsRank, documents)
 
 if __name__ == "__main__":
 	main()

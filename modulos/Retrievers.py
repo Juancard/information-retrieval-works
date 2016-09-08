@@ -22,20 +22,42 @@ class BooleanRetriever(object):
 		return retrieved
 
 	def intersect(self, terms):
-		pass
+		if not terms:
+			return set()
+		out = set(self.documents)
 
-	def union(self, terms):
-		pass
-
-	def complement(self, terms):
-		out = set()
 		for t in terms:
-			unwanted = []
 			if t in self.vocabulary.content:
 				termId = self.vocabulary.getId(t)
-				unwanted = self.postings.getDocsIdFromTerm(termId)
-			[out.add(d) for d in self.documents if d not in unwanted]
+				out &= set(self.postings.getDocsIdFromTerm(termId))
+			else:
+				return set()
+
 		return out
+
+	def union(self, terms):
+		out = set()
+		for t in terms:
+			if t in self.vocabulary.content:
+				termId = self.vocabulary.getId(t)
+				out |= set(self.postings.getDocsIdFromTerm(termId))
+		return out
+
+
+	def complement(self, terms):
+		if not terms:
+			return set()
+
+		out = set(self.documents)
+		for t in terms:
+			unwanted = set()
+			if t in self.vocabulary.content:
+				termId = self.vocabulary.getId(t)
+				unwanted = set(self.postings.getDocsIdFromTerm(termId))
+			out -= unwanted
+
+		return out
+
 
 class VectorRetriever(object):
 
@@ -90,12 +112,19 @@ class VectorRetriever(object):
 		if not self.vocabulary.hasIdf():
 			self.vocabulary.setIdf(len(self.documents))
 
+		# Maximas frecuencias de cada documento
+		maxTfreq = {}
+		for d in self.documentsTerms:
+			maxTfreq[d] = 0
+			for t in self.documentsTerms[d]:
+				tfreq = self.postings.getValue(t, d)
+				if tfreq > maxTfreq[d]: maxTfreq[d] = tfreq
+
 		# Seteo TF_idf como valor de la posting
 		for t in self.vocabulary.content:
 			termId = self.vocabulary.getId(t)
 			p = self.postings.getPosting(termId)
-			maxTfreq = max([p[docId] for docId in p])
-			[self.postings.addDocToPosting(termId, docId, (p[docId] / maxTfreq) * self.vocabulary.getIdf(t)) for docId in p]
+			[self.postings.addDocToPosting(termId, docId, (p[docId] / maxTfreq[docId]) * self.vocabulary.getIdf(t)) for docId in p]
 
 	def getRank(self, queries):
 		if self.weight == self.WEIGHT_TF_IDF:

@@ -50,7 +50,6 @@ class QueriesManager(object):
 		self.booleanOperators = booleanOperators
 		self.queries = []
 		self.lexAnalyser = False
-		print self.booleanOperators, self.model
 
 	def setLexAnalyser(self, lexAnalyser):
 		self.lexAnalyser = lexAnalyser

@@ -45,6 +45,9 @@ def main():
 	postings = pp.load(INDEX_DIR+"postings")
 	print "Cargando documentsTerms"
 	documentsTerms = pp.load(INDEX_DIR+"documentsTerms")
+	print "Cargando Retriever"
+	vr = VectorRetriever(vocabulary, postings, documents, documentsTerms)
+
 
 	# Configuro al query manager
 	la = LexAnalyser(config)
@@ -58,12 +61,12 @@ def main():
 	else:
 		qm.setQueriesFromConsole()
 
-	vr = VectorRetriever(vocabulary, postings, documents, documentsTerms)
-	#vr.setRank(VectorRetriever.RANK_JACCARD)
-	rank = vr.getRank(qm.queries)
+	if qm.queries:
+		#vr.setRank(VectorRetriever.RANK_JACCARD)
+		rank = vr.getRank(qm.queries)
 	
-	for q in rank: print "Query %d: %d documentos recuperados" % (q,len(rank[q]))
-	vr.printRankingFile(rank,"ranking")
+		for q in rank: print "Query %d: %d documentos recuperados" % (q,len(rank[q]))
+		vr.printRankingFile(rank,"ranking")
 
 if __name__ == "__main__":
 	main()
