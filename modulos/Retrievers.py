@@ -11,20 +11,11 @@ class BooleanRetriever(object):
 		retrieved = {}
 		for q in queries:
 			if q.positionalOperator:
-				print "Existe operador posicional"
 				retrieved = self.positionalRetrieve(q)
 			elif q.booleanOperator:
-				print "Existe operador booleano"
 				retrieved = self.booleanRetrieve(q)
 			else:
-				print "no hay operador"
 				retrieved[q.num] = self.union(q.setOfWords)
-		return retrieved
-
-	def positionalRetrieve(self, query):
-		terms = query.setOfWords
-		retrieved = {}
-
 		return retrieved
 
 	def booleanRetrieve(self, query):
@@ -77,6 +68,23 @@ class BooleanRetriever(object):
 
 		return out
 
+	def positionalRetrieve(self, query):
+		terms = query.setOfWords
+		po = query.positionalOperator
+		retrieved = {}
+
+		if po == query.OPERATOR_ADJACENT:
+			retrieved[query.num] = self.retrieveAtPosition(terms, 1)
+		elif po == query.OPERATOR_CLOSE:
+			retrieved[query.num] = self.retrieveAtPosition(terms, 5)
+		# SI ES un numero, busco por cercania N
+		elif po >= 0:
+			retrieved[query.num] = self.retrieveAtPosition(terms, po)
+
+		return retrieved
+	
+	def retrieveAtPosition(self, terms, position):
+		print position
 
 class VectorRetriever(object):
 
