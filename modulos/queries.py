@@ -7,7 +7,11 @@ class Query(object):
 	OPERATOR_AND = "AND"
 	OPERATOR_OR = "OR"
 	OPERATOR_NOT = "NOT"
+	OPERATOR_ADJACENT = "ADJACENT"
+	OPERATOR_CLOSE = "CLOSE-TO"
+	OPERATOR_DISTANCE = "N-TERMS"
 	booleanOperators = [OPERATOR_AND, OPERATOR_OR, OPERATOR_NOT]
+	positionalOperators = [OPERATOR_ADJACENT, OPERATOR_CLOSE, OPERATOR_DISTANCE]
 
 	def __init__(self, num, title):
 		self.num = num
@@ -15,12 +19,25 @@ class Query(object):
 		self.bagOfWords = {}
 		self.setOfWords = set()
 		self.booleanOperator = False
+		self.positionalOperator = False
 
 	def setBooleanOperator(self):
 		for bo in self.booleanOperators:
 			if bo in self.title:
 				self.booleanOperator = bo 
 				self.title = self.title.replace(bo, "")
+
+	def setPositionalOperator(self):
+		for po in self.positionalOperators:
+			if po == self.OPERATOR_DISTANCE:
+				pattern = re.compile(r".*\s((\d+)-TERMS)")
+				m = pattern.match(self.title)
+				if m:
+					self.positionalOperator = m.groups()[1]
+					self.title = self.title.replace(m.groups()[0], "")
+			elif po in self.title:
+				self.positionalOperator = po 
+				self.title = self.title.replace(po, "")
 
 	def normalize(self, lexAnalyser):
 		return lexAnalyser.analyse(self.title)["terms"]
@@ -43,11 +60,12 @@ class QueriesManager(object):
 	MODEL_BOOLEAN = "boolean"
 	MODEL_VECTOR = "vector"
 
-	def __init__(self, model=MODEL_VECTOR, booleanOperators=False):
+	def __init__(self, model=MODEL_VECTOR, booleanOperators = False ,positionalOperators = False):
 		
 		if model is not None:
 			self.model = model
 		self.booleanOperators = booleanOperators
+		self.positionalOperators = positionalOperators
 		self.queries = []
 		self.lexAnalyser = False
 
@@ -57,6 +75,8 @@ class QueriesManager(object):
 	def addQuery(self, query):
 		if self.booleanOperators:
 			query.setBooleanOperator()
+		if self.positionalOperators:
+			query.setPositionalOperator()			
 
 		terms = []
 		if self.lexAnalyser:
@@ -71,9 +91,13 @@ class QueriesManager(object):
 
 		self.queries.append(query)
 
-	def setQueriesFromConsole(self, booleanOperators = None):
-		if booleanOperators is not None:
+	def setQueriesFromConsole(self):
+		if self.booleanOperators:
 			print "\nQueries booleanas permitidas:\n\ttermino1 AND termino2\n\ttermino1 OR termino2\n\tNOT termino1"
+		if self.positionalOperators:
+			print "\nQueries posicionales permitidas:"
+			for op in Query.positionalOperators:
+				print "\ttermino1 %s termino2" % op
 
 		qId = 1
 		qInput = raw_input("Ingresar query %d (-1 para salir): " % qId).decode("UTF-8") 

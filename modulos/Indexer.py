@@ -17,6 +17,7 @@ class Indexer(object):
 		self.postings = DictionaryPostings({})
 		self.documents = Documents()
 		self.documentsTerms = {}
+		self.positions = DictionaryPostings({})
 
 	def index(self, config):
 		"""Indexa la coleccion dada"""
@@ -42,6 +43,7 @@ class Indexer(object):
 				# GUardo tokens y terminos del documento
 				tokens = []
 				terms = []
+
 				for line in f:
 					# Aplica tokenizado, stopwords y demas (segun config)
 					analysed = self.lexAnalyser.analyse(line)
@@ -51,6 +53,8 @@ class Indexer(object):
 			# Guardo documento actual
 			docId += 1
 			self.documents.addDocument(docId, actualDoc["name"])
+			
+			# De cada documento los terminos que tiene (sin repetir)
 			self.documentsTerms[docId] = set()
 
 			# Actualizo vocabulario
@@ -68,30 +72,40 @@ class Indexer(object):
 		print u"Generando id de los términos"
 		self.setTermsId()
 		self.postings.sortByKey()
+		self.positions.sortByKey()
 
 	def updateIndex(self, docId, terms):
-		#print terms
+		position = 0
 		for t in terms:
 			self.documentsTerms[docId].add(t)
 			# Si termino no esta en vocabulario lo agrego inicializando la data
 			if not self.vocabulary.isATerm(t):
 				self.vocabulary.addTerm(t, 1.0, 1.0)
 				self.postings.addPosting(t, docId, 1.0)
+				self.positions.addPosting(t, docId, [position])
 			else:
 				self.vocabulary.incrementCF(t, 1.0)
 				# termino no estaba en este documento?
 				if not self.postings.isDocInPosting(t, docId):
 					self.vocabulary.incrementDF(t, 1.0)
 					self.postings.addDocToPosting(t, docId, 1.0)
+					self.positions.addDocToPosting(t, docId, [position])
 				# else termino ya existe en documento:
 				else:
+					# Actualizo postings con frecuencias
 					self.postings.addDocToPosting(t, docId, self.postings.getValue(t, docId) + 1.0)
+					# Actualizo postings posicionales
+					positionList = self.positions.getValue(t, docId)
+					positionList.append(position)
+					self.positions.addDocToPosting(t, docId, positionList)
+			position += 1
 
 	def setTermsId(self):
 		termId = 1
 		for term in self.vocabulary.content:
 			self.vocabulary.setId(term, termId)
 			self.postings.termToId(term, termId)
+			self.positions.termToId(term, termId)
 			for doc in self.documentsTerms:
 				if term in self.documentsTerms[doc]:
 					self.documentsTerms[doc].discard(term)

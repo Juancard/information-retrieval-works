@@ -10,17 +10,36 @@ class BooleanRetriever(object):
 	def retrieve(self, queries):
 		retrieved = {}
 		for q in queries:
-			terms = q.setOfWords
-			if q.booleanOperator == q.OPERATOR_AND:
-				retrieved[q.num] = self.intersect(terms)
-			elif q.booleanOperator == q.OPERATOR_OR:
-				retrieved[q.num] = self.union(terms)
-			elif q.booleanOperator == q.OPERATOR_NOT:
-				retrieved[q.num] = self.complement(terms)
+			if q.positionalOperator:
+				print "Existe operador posicional"
+				retrieved = self.positionalRetrieve(q)
+			elif q.booleanOperator:
+				print "Existe operador booleano"
+				retrieved = self.booleanRetrieve(q)
 			else:
-				retrieved[q.num] = self.union(terms)
+				print "no hay operador"
+				retrieved[q.num] = self.union(q.setOfWords)
 		return retrieved
 
+	def positionalRetrieve(self, query):
+		terms = query.setOfWords
+		retrieved = {}
+
+		return retrieved
+
+	def booleanRetrieve(self, query):
+		terms = query.setOfWords
+		retrieved = {}
+		
+		if query.booleanOperator == query.OPERATOR_AND:
+			retrieved[query.num] = self.intersect(terms)
+		elif query.booleanOperator == query.OPERATOR_OR:
+			retrieved[query.num] = self.union(terms)
+		elif query.booleanOperator == query.OPERATOR_NOT:
+			retrieved[query.num] = self.complement(terms)
+		
+		return retrieved
+	
 	def intersect(self, terms):
 		if not terms:
 			return set()

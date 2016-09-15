@@ -55,13 +55,15 @@ def main():
 	vocabulary = pp.load(INDEX_DIR+"vocabulary")
 	print "Cargando documentos"
 	documents = pp.load(INDEX_DIR+"documents")
-	print "Cargando postings"
-	seqPostings = SequentialPostings(INDEX_DIR+"seq_posting.txt")
+	print "Cargando postings con frecuencias"
+	seqFreqPostings = SequentialPostings(INDEX_DIR+"seq_freq_posting.txt")
+	print "Cargando postings posicionales"
+	seqPositionalPostings = SequentialPostings(INDEX_DIR+"seq_position_posting.txt")
 
 	# Configuro al query manager
 	la = LexAnalyser(config)
 	qm = QueriesManager(model=QueriesManager.MODEL_BOOLEAN, 
-		booleanOperators=True)
+		positionalOperators=True)
 	qm.setLexAnalyser(la)
 
 	# Solicito queries
@@ -73,7 +75,7 @@ def main():
 
 	# Realizo recuperacion
 	if qm.queries:
-		br = BooleanRetriever(vocabulary, seqPostings, documents.content)
+		br = BooleanRetriever(vocabulary, seqPositionalPostings, documents.content)
 		docsRank = br.retrieve(qm.queries)
 		# Muestro resultados
 		printRank(docsRank, documents)

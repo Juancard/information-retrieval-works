@@ -59,6 +59,11 @@ class Vocabulary(object):
 	def getId(self, term):
 		return self.content[term]["id"]
 
+	def getTermFromId(self, termId):
+		for t in self.content:
+			if self.content[t]["id"] == termId:
+				return t
+
 	def orderByFrecuenceValue(self, isDesc):
 		return sorted(self.content, key=lambda x: (self.content[x]['cf'], self.content[x]['df']), reverse=isDesc)
 

@@ -101,8 +101,15 @@ class SequentialPostings(Postings):
 			for t in postings:
 				postingStr = ["%d%s" % (t, self.SEPARATOR_TERM)]
 				for d in postings[t]:
-					postingStr.append("%d%s%d%s" % 
-						(d, self.SEPARATOR_VALUE, postings[t][d], self.SEPARATOR_DOC))
+					value = postings[t][d]
+					docStr = "%d" % d
+					if isinstance(value, list):
+						for item in value:
+							docStr += "%s%d" % (self.SEPARATOR_VALUE, item)
+					else:
+						docStr += "%s%d" % (self.SEPARATOR_VALUE, value)
+					docStr += "%s" % (self.SEPARATOR_DOC)
+					postingStr.append(docStr)
 				postingStr.append('\n')
 				allStr.extend(postingStr)
 			f.write(''.join(allStr))
@@ -154,8 +161,10 @@ class SequentialPostings(Postings):
 		posting = {}
 		for doc in strPosting.split(self.SEPARATOR_DOC):
 			values = doc.split(self.SEPARATOR_VALUE)
-			if len(values) > 1:
+			if len(values) == 2:
 				posting[int(values[0])] = int(values[1])
+			elif len(values) > 2:
+				posting[int(values[0])] = [int(i) for i in values[1:]]
 		return posting
 
 	def getDocsIdFromTerm(self, term):
