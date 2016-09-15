@@ -45,8 +45,12 @@ def main():
 	postings = pp.load(INDEX_DIR+"postings")
 	print "Cargando documentsTerms"
 	documentsTerms = pp.load(INDEX_DIR+"documentsTerms")
+	print "Cargando norma de documentos"
+	docsNorm =  pp.load(INDEX_DIR+"documentsNorm")
 	print "Cargando Retriever"
-	vr = VectorRetriever(vocabulary, postings, documents, documentsTerms)
+	vr = VectorRetriever(vocabulary, 
+		postings, documentsTerms, documentsNorm=docsNorm,
+		rank=VectorRetriever.RANK_COSINE_SIMILARITY)
 
 
 	# Configuro al query manager
@@ -62,9 +66,7 @@ def main():
 		qm.setQueriesFromConsole()
 
 	if qm.queries:
-		#vr.setRank(VectorRetriever.RANK_JACCARD)
 		rank = vr.getRank(qm.queries)
-	
 		for q in rank: print "Query %d: %d documentos recuperados" % (q,len(rank[q]))
 		vr.printRankingFile(rank,"ranking")
 

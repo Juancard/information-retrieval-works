@@ -50,7 +50,11 @@ def main():
 	# Indexo
 	indexer = Indexer(collection)
 	indexer.index(indexConfig)
-
+	print "Seteando pesos TF_IDF"
+	indexer.setTfIdf()
+	print "Seteando documentsNorm"
+	docsNorm = indexer.getDocumentsNorm()
+	
 	# Persisto indice para su recuperacion
 	INDEX_DIR = "index_data/"
 	if not os.path.exists(INDEX_DIR):
@@ -61,6 +65,7 @@ def main():
 	print "Documentos guardados en: %s" % pp.save(indexer.documents, INDEX_DIR + "documents")
 	print "Postings guardados en: %s" % pp.save(indexer.postings, INDEX_DIR + "postings")
 	print "Documents Terms guardado en %s" % pp.save(indexer.documentsTerms, INDEX_DIR + "documentsTerms")
+	print "Documents Norm guardado en %s" % pp.save(docsNorm, INDEX_DIR + "documentsNorm")
 
 	# Guardo configuracion del index
 	CONFIG_NAME = "config.json"

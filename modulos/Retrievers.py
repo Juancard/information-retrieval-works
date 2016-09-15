@@ -126,11 +126,7 @@ class VectorRetriever(object):
 		self.postings = postings
 		self.documentsTerms = documentsTerms
 		self.documentsNorm = documentsNorm
-
-		# Weight: TF_IDF POR DEFECTO
 		self.weight = weight
-
-		# Rank por defecto
 		self.rank = rank
 
 	def getQueryNorm(self, query):
@@ -146,7 +142,6 @@ class VectorRetriever(object):
 			queries = self.getQueriesWeight(queries)
 
 		rank = {}
-
 		for q in queries:
 			print "Procesando query %s" % q
 			rank[q] = self.getScalarProductRank(queries[q])

@@ -93,7 +93,6 @@ def main():
 
 	if qm.queries:
 		rank = vr.getRank(qm.queries)
-	
 		for q in rank: print "Query %d: %d documentos recuperados" % (q,len(rank[q]))
 		vr.printRankingFile(rank,"ranking")
 
