@@ -11,23 +11,23 @@ class BooleanRetriever(object):
 		retrieved = {}
 		for q in queries:
 			if q.positionalOperator:
-				retrieved = self.positionalRetrieve(q)
+				retrieved[q.num] = self.positionalRetrieve(q)
 			elif q.booleanOperator:
-				retrieved = self.booleanRetrieve(q)
+				retrieved[q.num] = self.booleanRetrieve(q)
 			else:
 				retrieved[q.num] = self.union(q.setOfWords)
 		return retrieved
 
 	def booleanRetrieve(self, query):
 		terms = query.setOfWords
-		retrieved = {}
-		
-		if query.booleanOperator == query.OPERATOR_AND:
-			retrieved[query.num] = self.intersect(terms)
-		elif query.booleanOperator == query.OPERATOR_OR:
-			retrieved[query.num] = self.union(terms)
-		elif query.booleanOperator == query.OPERATOR_NOT:
-			retrieved[query.num] = self.complement(terms)
+		bo = query.booleanOperator
+
+		if bo == query.OPERATOR_AND:
+			retrieved = self.intersect(terms)
+		elif bo == query.OPERATOR_OR:
+			retrieved = self.union(terms)
+		elif bo == query.OPERATOR_NOT:
+			retrieved = self.complement(terms)
 		
 		return retrieved
 	
@@ -71,20 +71,45 @@ class BooleanRetriever(object):
 	def positionalRetrieve(self, query):
 		terms = query.setOfWords
 		po = query.positionalOperator
-		retrieved = {}
 
 		if po == query.OPERATOR_ADJACENT:
-			retrieved[query.num] = self.retrieveAtPosition(terms, 1)
+			retrieved = self.retrieveAtDistance(terms, 1)
 		elif po == query.OPERATOR_CLOSE:
-			retrieved[query.num] = self.retrieveAtPosition(terms, 5)
+			retrieved = self.retrieveAtDistance(terms, 5)
 		# SI ES un numero, busco por cercania N
 		elif po >= 0:
-			retrieved[query.num] = self.retrieveAtPosition(terms, po)
+			retrieved = self.retrieveAtDistance(terms, po)
 
 		return retrieved
 	
-	def retrieveAtPosition(self, terms, position):
-		print position
+	def retrieveAtDistance(self, terms, distance):
+
+		# Recibe dos listas con posiciones
+		# Devuelve True si hay una posicion a la distancia dada
+		def isPositionAtDistance(list1, list2, distance):
+			if not isinstance(list1,list): list1 = [list1]
+			if not isinstance(list2,list): list2 = [list2]
+			for i in list1: 
+				for j in list2:
+					if abs(i - j) <= distance: return True
+			return False
+
+		retrieved = set()
+		if len(terms) >= 2:
+			t1 = list(terms)[0]
+			t2 = list(terms)[1]
+			if t1 in self.vocabulary.content and t2 in self.vocabulary.content:
+				sharedDocs = self.intersect([t1,t2])
+				if sharedDocs:
+					termId1 = self.vocabulary.getId(t1)
+					termId2 = self.vocabulary.getId(t2)
+					pT1 = self.postings.getPosting(termId1)
+					pT2 = self.postings.getPosting(termId2)
+					for doc in sharedDocs:
+						if doc in pT1 and doc in pT2 and isPositionAtDistance(pT1[doc], pT2[doc], distance):
+							retrieved.add(doc)
+
+		return retrieved
 
 class VectorRetriever(object):
 

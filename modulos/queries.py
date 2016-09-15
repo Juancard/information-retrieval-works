@@ -33,7 +33,7 @@ class Query(object):
 				pattern = re.compile(r".*\s((\d+)-TERMS)")
 				m = pattern.match(self.title)
 				if m:
-					self.positionalOperator = m.groups()[1]
+					self.positionalOperator = int(m.groups()[1])
 					self.title = self.title.replace(m.groups()[0], "")
 			elif po in self.title:
 				self.positionalOperator = po 
