@@ -119,79 +119,46 @@ class VectorRetriever(object):
 	RANK_JACCARD = "jaccard"
 	RANK_DICE = "dice"
 
-	def __init__(self, vocabulary, postings, documents, documentsTerms):
+	def __init__(self, vocabulary, postings, documentsTerms, 
+		weight=WEIGHT_TF_IDF, rank=RANK_SCALAR_PRODUCT,
+		documentsNorm={}):
 		self.vocabulary = vocabulary
 		self.postings = postings
-		self.documents = documents.content
 		self.documentsTerms = documentsTerms
-		self.documentsNorm = {}
+		self.documentsNorm = documentsNorm
 
 		# Weight: TF_IDF POR DEFECTO
-		self.setWeights(self.WEIGHT_TF_IDF)
-
-		# Rank: DICE por defecto
-		self.setRank(self.RANK_COSINE_SIMILARITY)
-
-	def setWeights(self, weight):
 		self.weight = weight
-		if weight == self.WEIGHT_TF_IDF:
-			self.calculateTfIdf()
 
-	def setRank(self, rank):
+		# Rank por defecto
 		self.rank = rank
-		if rank == self.RANK_COSINE_SIMILARITY or rank == self.RANK_JACCARD or rank == self.RANK_DICE:
-			self.setDocumentsNorm()
 
-	def setDocumentsNorm(self):
-		for d in self.documentsTerms:
-			total = 0.0
-			for t in self.documentsTerms[d]:
-				p = self.postings.getPosting(t)
-				total += p[d] ** 2.0
-			self.documentsNorm[d] = total ** 0.5
-
-	def getQueriesNorm(self, queries):
-		qNorm = {}
-		for q in queries:
-			qNorm[q] = 0.0 
-			for t in queries[q]:
-				qNorm[q] += queries[q][t] ** 2
-			qNorm[q] = qNorm[q] ** 0.5
+	def getQueryNorm(self, query):
+		qNorm = 0.0 
+		for t in query:
+			qNorm += query[t] ** 2
+		qNorm = qNorm ** 0.5
 		return qNorm
 
-	def calculateTfIdf(self):
-		# Seteo idf
-		if not self.vocabulary.hasIdf():
-			self.vocabulary.setIdf(len(self.documents))
-
-		# Maximas frecuencias de cada documento
-		maxTfreq = {}
-		for d in self.documentsTerms:
-			maxTfreq[d] = 0
-			for t in self.documentsTerms[d]:
-				tfreq = self.postings.getValue(t, d)
-				if tfreq > maxTfreq[d]: maxTfreq[d] = tfreq
-
-		# Seteo TF_idf como valor de la posting
-		for t in self.vocabulary.content:
-			termId = self.vocabulary.getId(t)
-			p = self.postings.getPosting(termId)
-			[self.postings.addDocToPosting(termId, docId, (p[docId] / maxTfreq[docId]) * self.vocabulary.getIdf(t)) for docId in p]
 
 	def getRank(self, queries):
 		if self.weight == self.WEIGHT_TF_IDF:
 			queries = self.getQueriesWeight(queries)
-		
-		scalarProductRank = self.getScalarProductRank(queries)
-		if self.rank == self.RANK_SCALAR_PRODUCT:
-			return scalarProductRank
-		qNorm = self.getQueriesNorm(queries)
-		if self.rank == self.RANK_COSINE_SIMILARITY:
-			return self.getCosineSimilarityRank(scalarProductRank, self.documentsNorm, qNorm)
-		if self.rank == self.RANK_JACCARD:
-			return self.getJaccardRank(scalarProductRank, self.documentsNorm, qNorm)
-		if self.rank == self.RANK_DICE:
-			return self.getDiceRank(scalarProductRank, self.documentsNorm, qNorm)
+
+		rank = {}
+
+		for q in queries:
+			print "Procesando query %s" % q
+			rank[q] = self.getScalarProductRank(queries[q])
+			if not self.rank == self.RANK_SCALAR_PRODUCT:
+				qNorm = self.getQueryNorm(queries[q])
+				if self.rank == self.RANK_COSINE_SIMILARITY:
+					rank[q] = self.getCosineSimilarityRank(rank[q], qNorm)
+				if self.rank == self.RANK_JACCARD:
+					rank[q] = self.getJaccardRank(rank[q], qNorm)
+				if self.rank == self.RANK_DICE:
+					rank[q] = self.getDiceRank(rank[q], qNorm)
+		return rank
 
 	def getQueriesWeight(self, queries):
 		queriesWeight = {}
@@ -202,47 +169,39 @@ class VectorRetriever(object):
 					queriesWeight[q.num][t] = q.bagOfWords[t] * self.vocabulary.getIdf(t) 
 		return queriesWeight
 
-	def getScalarProductRank(self, queries):
+	def getScalarProductRank(self, query):
 		scalarProduct = {}
-		for q in queries:
-			scalarProduct[q] = {}
-			for d in self.documentsTerms:
-				sp = 0.0
-				for t in queries[q]:
-					termId = self.vocabulary.getId(t)
-					if termId in self.documentsTerms[d]:
-						sp += self.postings.getPosting(termId)[d] * queries[q][t]
-				if sp > 0.0:
-					scalarProduct[q][d] = sp
+		for d in self.documentsTerms:
+			sp = 0.0
+			for t in query:
+				termId = self.vocabulary.getId(t)
+				if termId in self.documentsTerms[d]:
+					sp += self.postings.getPosting(termId)[d] * query[t]
+			if sp > 0.0:
+				scalarProduct[d] = sp
 		return scalarProduct
 
-	def getCosineSimilarityRank(self, scalarProductRank, documentsNorm, queriesNorm):
+	def getCosineSimilarityRank(self, scalarProductRank, qNorm):
 		cosineSimilarity = {}
-		for q in scalarProductRank:
-			cosineSimilarity[q] = {}
-			for d in scalarProductRank[q]:
-				if (documentsNorm[d] * queriesNorm[q]) != 0.0:
-					cosineSimilarity[q][d] = scalarProductRank[q][d] / (documentsNorm[d] * queriesNorm[q])
+		for d in scalarProductRank:
+			if (self.documentsNorm[d] * qNorm) != 0.0:
+				cosineSimilarity[d] = scalarProductRank[d] / (self.documentsNorm[d] * qNorm)
 		return cosineSimilarity
 
-	def getJaccardRank(self, scalarProductRank, documentsNorm, queriesNorm):
+	def getJaccardRank(self, scalarProductRank, qNorm):
 		jaccardRank = {}
-		for q in scalarProductRank:
-			jaccardRank[q] = {}
-			for d in scalarProductRank[q]:
-				divider = (documentsNorm[d] ** 2.0) + (queriesNorm[q] ** 2.0) - scalarProductRank[q][d]
-				if divider != 0.0:
-					jaccardRank[q][d] = scalarProductRank[q][d] / divider
+		for d in scalarProductRank:
+			divider = (self.documentsNorm[d] ** 2.0) + (qNorm ** 2.0) - scalarProductRank[d]
+			if divider != 0.0:
+				jaccardRank[d] = scalarProductRank[d] / divider
 		return jaccardRank
 
-	def getDiceRank(self, scalarProductRank, documentsNorm, queriesNorm):
+	def getDiceRank(self, scalarProductRank, qNorm):
 		diceRank = {}
-		for q in scalarProductRank:
-			diceRank[q] = {}
-			for d in scalarProductRank[q]:
-				divider = (documentsNorm[d] ** 2.0) + (queriesNorm[q] ** 2.0)
-				if divider != 0:
-					diceRank[q][d] = (2.0 * scalarProductRank[q][d]) / divider
+		for d in scalarProductRank:
+			divider = (self.documentsNorm[d] ** 2.0) + (qNorm ** 2.0)
+			if divider != 0:
+				diceRank[d] = (2.0 * scalarProductRank[d]) / divider
 		return diceRank
 
 	def printRankingFile(self, ranksByQuery, title):	
@@ -257,7 +216,7 @@ class VectorRetriever(object):
 							docId, 
 							rank,
 							ranksByQuery[qId][docId],
-							"JCAR_2016"))
+							self.rank))
 					rank += 1
 			f.write(''.join(s))
 		return title

@@ -182,3 +182,32 @@ class Indexer(object):
 				% self.stats["terms_freq_one"])
 			statsFile.write(''.join(s))
 		return title
+
+	def setTfIdf(self):
+		# Seteo idf
+		if not self.vocabulary.hasIdf():
+			self.vocabulary.setIdf(len(self.documents.content))
+
+		# Maximas frecuencias de cada documento
+		maxTfreq = {}
+		for d in self.documentsTerms:
+			maxTfreq[d] = 0
+			for t in self.documentsTerms[d]:
+				tfreq = self.postings.getValue(t, d)
+				if tfreq > maxTfreq[d]: maxTfreq[d] = tfreq
+
+		# Seteo TF_idf como valor de la posting
+		for t in self.vocabulary.content:
+			termId = self.vocabulary.getId(t)
+			p = self.postings.getPosting(termId)
+			[self.postings.addDocToPosting(termId, docId, (p[docId] / maxTfreq[docId]) * self.vocabulary.getIdf(t)) for docId in p]
+	
+	def getDocumentsNorm(self):
+		documentsNorm = {}
+		for d in self.documentsTerms:
+			total = 0.0
+			for t in self.documentsTerms[d]:
+				p = self.postings.getPosting(t)
+				total += p[d] ** 2.0
+			documentsNorm[d] = total ** 0.5
+		return documentsNorm
