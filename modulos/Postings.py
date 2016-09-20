@@ -167,3 +167,5 @@ class SequentialPostings(Postings):
 				posting[int(values[0])] = [int(i) for i in values[1:]]
 		return posting
 
+	def getDocsIdFromTerm(self, term):
+		return self.getPosting(term).keys()

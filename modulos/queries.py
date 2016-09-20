@@ -52,26 +52,26 @@ class Query(object):
 	def normalize(self, lexAnalyser):
 		return lexAnalyser.analyse(self.title)["terms"]
 
-	def setBagOfWords(self, terms):
-		for t in terms:
-			if t in self.bagOfWords:
-				self.bagOfWords[t] += 1
+	def getBagOfWords(self):
+		bow = {}
+		for t in self.terms:
+			if t in bow:
+				bow[t] += 1
 			else:
-				self.bagOfWords[t] = 1
+				bow[t] = 1
+		return bow
 
-	def setSetOfWords(self, terms):
-		self.setOfWords = set(terms)
+	def getSetOfWords(self):
+		return set(self.terms)
 
 	def __repr__(self):
-		return self.title.encode("UTF-8") + ": " + repr(self.bagOfWords)
+		return self.title.encode("UTF-8") + ": " + repr(self.terms)
 
 class QueriesManager(object):
 
 	def __init__(self, booleanOperators = False,
 		positionalOperators = False, phraseOperator = False):
 		
-		if model is not None:
-			self.model = model
 		self.booleanOperators = booleanOperators
 		self.positionalOperators = positionalOperators
 		self.phraseOperator = phraseOperator

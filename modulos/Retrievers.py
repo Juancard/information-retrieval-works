@@ -15,11 +15,11 @@ class BooleanRetriever(object):
 			elif q.booleanOperator:
 				retrieved[q.num] = self.booleanRetrieve(q)
 			else:
-				retrieved[q.num] = self.union(q.setOfWords)
+				retrieved[q.num] = self.union(q.getSetOfWords())
 		return retrieved
 
 	def booleanRetrieve(self, query):
-		terms = query.setOfWords
+		terms = query.getSetOfWords()
 		bo = query.booleanOperator
 
 		if bo == query.OPERATOR_AND:
@@ -69,7 +69,7 @@ class BooleanRetriever(object):
 		return out
 
 	def positionalRetrieve(self, query):
-		terms = query.setOfWords
+		terms = query.getSetOfWords()
 		po = query.positionalOperator
 
 		if po == query.OPERATOR_ADJACENT:
@@ -159,9 +159,10 @@ class VectorRetriever(object):
 		queriesWeight = {}
 		for q in queries:
 			queriesWeight[q.num] = {}
-			for t in q.bagOfWords:
+			qBow = q.getBagOfWords()
+			for t in qBow:
 				if t in self.vocabulary.content:
-					queriesWeight[q.num][t] = q.bagOfWords[t] * self.vocabulary.getIdf(t) 
+					queriesWeight[q.num][t] = qBow[t] * self.vocabulary.getIdf(t) 
 		return queriesWeight
 
 	def getScalarProductRank(self, query):

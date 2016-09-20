@@ -79,7 +79,6 @@ def main():
 
 	# Realizo recuperacion
 	if qm.queries:
-		sys.exit()
 		br = BooleanRetriever(vocabulary, seqPositionalPostings, documents.content)
 		docsRank = br.retrieve(qm.queries)
 		# Muestro resultados
