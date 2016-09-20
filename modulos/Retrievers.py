@@ -150,7 +150,7 @@ class BooleanRetriever(object):
 					pT1 = self.postings.getPosting(termId1)
 					pT2 = self.postings.getPosting(termId2)
 					for doc in sharedDocs:
-						if doc in pT1 and doc in pT2 and isPositionAtDistance(pT1[doc], pT2[doc], distance):
+						if doc in pT1 and doc in pT2 and self.isPositionAtDistance(pT1[doc], pT2[doc], distance):
 							retrieved.add(doc)
 
 		return retrieved
