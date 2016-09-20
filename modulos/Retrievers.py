@@ -10,10 +10,13 @@ class BooleanRetriever(object):
 	def retrieve(self, queries):
 		retrieved = {}
 		for q in queries:
+			print "Procesando query %s" % q.num
 			if q.positionalOperator:
 				retrieved[q.num] = self.positionalRetrieve(q)
 			elif q.booleanOperator:
 				retrieved[q.num] = self.booleanRetrieve(q)
+			elif q.phraseOperator:
+				retrieved[q.num] = self.phraseRetrieve(q)
 			else:
 				retrieved[q.num] = self.union(q.getSetOfWords())
 		return retrieved
@@ -68,6 +71,42 @@ class BooleanRetriever(object):
 
 		return out
 
+	def phraseRetrieve(self, query):
+
+		# HAY AL MENOS DOS TERMINOS?
+		if len(query.terms) < 2: return self.union(query.terms)
+
+		# TODOS LOS TERMINOS ESTAN EN EL VOCABULARIO?
+		for t in query.terms:
+			if t not in self.vocabulary.content: return {}
+		
+		# COMPARTEN AL MENOS UN DOCUMENTO?
+		sharedDocs = self.intersect(query.terms)
+		if not sharedDocs: return {}
+
+		# comparo distancias
+		previousTerm = self.postings.getPosting(self.vocabulary.getId(query.terms[0]))
+		i = 1
+		while i < len(query.terms) and sharedDocs:
+			auxDocs = set()
+			actualTerm = self.postings.getPosting(self.vocabulary.getId(query.terms[i]))
+			for doc in sharedDocs:
+				matchedPositions = set()
+				prevPos = previousTerm[doc]
+				actualPos = actualTerm[doc]
+				if not isinstance(prevPos,list): prevPos = [prevPos]
+				if not isinstance(actualPos,list): actualPos = [actualPos]
+				for i in prevPos:
+					for j in actualPos:
+						if j - i == 1: matchedPositions.add(j)
+				if matchedPositions:
+					auxDocs.add(doc)
+				actualTerm[doc] = matchedPositions
+			sharedDocs = auxDocs
+			previousTerm = actualTerm
+			i += 1
+		return sharedDocs
+
 	def positionalRetrieve(self, query):
 		terms = query.getSetOfWords()
 		po = query.positionalOperator
@@ -82,18 +121,23 @@ class BooleanRetriever(object):
 
 		return retrieved
 	
-	def retrieveAtDistance(self, terms, distance):
 
-		# Recibe dos listas con posiciones
-		# Devuelve True si hay una posicion a la distancia dada
-		def isPositionAtDistance(list1, list2, distance):
-			if not isinstance(list1,list): list1 = [list1]
-			if not isinstance(list2,list): list2 = [list2]
-			for i in list1: 
-				for j in list2:
+	# Recibe dos listas con posiciones
+	# Devuelve True si hay una posicion a la distancia dada
+	def isPositionAtDistance(self, list1, list2, distance, left=False, right=False):
+		if not isinstance(list1,list): list1 = [list1]
+		if not isinstance(list2,list): list2 = [list2]
+		for i in list1: 
+			for j in list2:
+				if left==right:
 					if abs(i - j) <= distance: return True
-			return False
+				elif left:
+					if j - i <= distance: return True
+				elif right:
+					if i - j <= distance: return True
+		return False
 
+	def retrieveAtDistance(self, terms, distance):
 		retrieved = set()
 		if len(terms) >= 2:
 			t1 = list(terms)[0]
