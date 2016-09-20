@@ -67,8 +67,7 @@ def main():
 
 	# Configuro al query manager
 	la = LexAnalyser(config)
-	qm = QueriesManager(model=QueriesManager.MODEL_BOOLEAN, 
-		phraseOperator=True)
+	qm = QueriesManager(phraseOperator=True)
 	qm.setLexAnalyser(la)
 
 	# Solicito queries

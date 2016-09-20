@@ -67,10 +67,7 @@ class Query(object):
 
 class QueriesManager(object):
 
-	MODEL_BOOLEAN = "boolean"
-	MODEL_VECTOR = "vector"
-
-	def __init__(self, model=MODEL_VECTOR, booleanOperators = False,
+	def __init__(self, booleanOperators = False,
 		positionalOperators = False, phraseOperator = False):
 		
 		if model is not None:
@@ -98,11 +95,6 @@ class QueriesManager(object):
 		else:
 			terms = query.title.split(" ")
 		query.terms = terms
-
-		if self.model == self.MODEL_VECTOR:
-			query.setBagOfWords(terms)
-		elif self.model == self.MODEL_BOOLEAN:
-			query.setSetOfWords(terms)
 
 		self.queries.append(query)
 
