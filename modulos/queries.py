@@ -10,16 +10,19 @@ class Query(object):
 	OPERATOR_ADJACENT = "ADJACENT"
 	OPERATOR_CLOSE = "CLOSE-TO"
 	OPERATOR_DISTANCE = "N-TERMS"
+	OPERATOR_PHRASE = '"'
 	booleanOperators = [OPERATOR_AND, OPERATOR_OR, OPERATOR_NOT]
 	positionalOperators = [OPERATOR_ADJACENT, OPERATOR_CLOSE, OPERATOR_DISTANCE]
 
 	def __init__(self, num, title):
 		self.num = num
 		self.title = title
+		self.terms = []
 		self.bagOfWords = {}
 		self.setOfWords = set()
 		self.booleanOperator = False
 		self.positionalOperator = False
+		self.phraseOperator = False
 
 	def setBooleanOperator(self):
 		for bo in self.booleanOperators:
@@ -38,6 +41,13 @@ class Query(object):
 			elif po in self.title:
 				self.positionalOperator = po 
 				self.title = self.title.replace(po, "")
+
+	def setPhraseOperator(self):
+		pattern = re.compile(r'.*\s*"(.*)"')
+		m = pattern.match(self.title)
+		if m:
+			self.title = m.groups()[0]
+			self.phraseOperator = True
 
 	def normalize(self, lexAnalyser):
 		return lexAnalyser.analyse(self.title)["terms"]
@@ -60,12 +70,14 @@ class QueriesManager(object):
 	MODEL_BOOLEAN = "boolean"
 	MODEL_VECTOR = "vector"
 
-	def __init__(self, model=MODEL_VECTOR, booleanOperators = False ,positionalOperators = False):
+	def __init__(self, model=MODEL_VECTOR, booleanOperators = False,
+		positionalOperators = False, phraseOperator = False):
 		
 		if model is not None:
 			self.model = model
 		self.booleanOperators = booleanOperators
 		self.positionalOperators = positionalOperators
+		self.phraseOperator = phraseOperator
 		self.queries = []
 		self.lexAnalyser = False
 
@@ -77,12 +89,15 @@ class QueriesManager(object):
 			query.setBooleanOperator()
 		if self.positionalOperators:
 			query.setPositionalOperator()			
+		if self.phraseOperator:
+			query.setPhraseOperator()
 
 		terms = []
 		if self.lexAnalyser:
 			terms = query.normalize(self.lexAnalyser)
 		else:
 			terms = query.title.split(" ")
+		query.terms = terms
 
 		if self.model == self.MODEL_VECTOR:
 			query.setBagOfWords(terms)
@@ -98,6 +113,8 @@ class QueriesManager(object):
 			print "\nQueries posicionales permitidas:"
 			for op in Query.positionalOperators:
 				print "\ttermino1 %s termino2" % op
+		if self.phraseOperator:
+			print '\nBusqueda por Frase con operador \'"\'\nEjemplo: "base de datos"'
 
 		qId = 1
 		qInput = raw_input("Ingresar query %d (-1 para salir): " % qId).decode("UTF-8") 
