@@ -50,16 +50,22 @@ class BooleanRetriever(object):
 				t2 = self.vocabulary.getId(list(terms)[1])
 				return self.postings.intersectWithSkip(t1, t2)
 		
-		out = set(self.documents)
+		# Si hay funcion intersect la llamo, caso contrario ejecuto la propia
+		try:
+			t1 = self.vocabulary.getId(list(terms)[0])
+			t2 = self.vocabulary.getId(list(terms)[1])
+			return self.postings.intersect(t1, t2)
+		except AttributeError, KeyError:
+			out = set(self.documents)
 
-		for t in terms:
-			if t in self.vocabulary.content:
-				termId = self.vocabulary.getId(t)
-				out &= set(self.postings.getDocsIdFromTerm(termId))
-			else:
-				return set()
+			for t in terms:
+				if t in self.vocabulary.content:
+					termId = self.vocabulary.getId(t)
+					out &= set(self.postings.getDocsIdFromTerm(termId))
+				else:
+					return set()
 
-		return out
+			return out
 
 	def union(self, terms):
 		out = set()

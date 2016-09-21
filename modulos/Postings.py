@@ -174,7 +174,7 @@ class SequentialPostings(Postings):
 
 	def getDocsIdFromTerm(self, term):
 		return self.getPosting(term).keys()
-
+		
 
 class BinaryPostings(object):
 	
@@ -202,14 +202,12 @@ class BinaryPostings(object):
 		return BinaryPostings(path, termToPointer)
 
 
-	@abstractmethod
 	def getAll(self):
 		postings = {}
 		for term in self.termToPointer:
 			postings[term] = self.getPosting(term)
 		return postings
 
-	@abstractmethod
 	def getPosting(self, term):
 		posting = {}
 		with open(self.path, "rb") as f:
@@ -234,22 +232,18 @@ class BinaryPostings(object):
 
 		return posting
 
-	@abstractmethod
 	def addPosting(self, term, docId, value):
 		""""Agrega posting"""
         pass   
 
-	@abstractmethod
 	def addDocToPosting(self, term, docId, value):
 		""""Agrega documento a la posting"""
         pass   
         
-	@abstractmethod
 	def isPosting(self, term):
 		""""Devuelve verdadero si existe la posting para el termino dado"""
         pass   
 
-	@abstractmethod
 	def getValue(self, term, docId):
 		""""Devuelve valor de la posting en el documento dado"""
         pass  
@@ -299,6 +293,25 @@ class BinaryPostings(object):
 
 	def setSkipLists(self, sl):
 		self.skipLists = sl
+
+	def intersect(self, t1, t2):
+		out = set()
+		p1 = self.termToPointer[t1]["pointer"]
+		endP1 = p1 + (self.termToPointer[t1]["lenDocs"] * 4)
+		p2 = self.termToPointer[t2]["pointer"]
+		endP2 = p2 + (self.termToPointer[t2]["lenDocs"] * 4)
+		with open(self.path, "rb") as f:
+			while p1 < endP1:
+				f.seek(p1)
+				docT1 = struct.unpack("<I", f.read(4))[0]
+				while p2 < endP2:
+					f.seek(p2)
+					docT2 = struct.unpack("<I", f.read(4))[0]
+					if docT2 == docT1:
+						out.add(docT1)
+					p2 += 4
+				p1 += 4
+		return out
 
 	def intersectWithSkip(self, t1, t2):
 		out = set()

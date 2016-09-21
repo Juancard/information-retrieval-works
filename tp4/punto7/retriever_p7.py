@@ -82,7 +82,7 @@ def main():
 	if qm.queries:
 
 		# Donde guardo tiempos de ejecucion de cada corrida
-		times = []
+		times = {}
 
 		# Postings secuenciales SIN skip lists
 		br = BooleanRetriever(vocabulary, seqPostings, documents.content)
@@ -90,30 +90,30 @@ def main():
 		print "-"*50
 		print "RECUPERANDO: Postings Secuenciales SIN Skip Lists"
 		br.retrieve(qm.queries)
-		times.append(time.time() - startTime)
+		times["seqNoSl"] = time.time() - startTime
 		print "-"*50
 
 		# Postings binarias SIN skip lists
-		#br = BooleanRetriever(vocabulary, postings, documents.content)
-		#startTime = time.time()
-		#print "RECUPERANDO: Postings Binarias SIN Skip Lists"
-		#br.retrieve(qm.queries)
-		times.append(time.time() - startTime)
-		#print "-"*50
+		br = BooleanRetriever(vocabulary, postings, documents.content)
+		startTime = time.time()
+		print "RECUPERANDO: Postings Binarias SIN Skip Lists"
+		br.retrieve(qm.queries)
+		times["binNoSl"] = time.time() - startTime
+		print "-"*50
 
 		# Postings binarias CON skip lists
 		br = BooleanRetriever(vocabulary, postings, documents.content, skipLists=True)
 		startTime = time.time()
 		print "RECUPERANDO: Postings Binarias CON Skip Lists"
 		br.retrieve(qm.queries)
-		times.append(time.time() - startTime)
+		times["binSl"] = time.time() - startTime
 		print "-"*50
 
 		print "\n","-"*50
 		print u"Tiempos de ejecución: "
-		print "Postings Secuenciales SIN Skip Lists: ", times[0]
-		#print "Postings Binarias SIN Skip Lists: ", times[1]
-		print "Postings Binarias CON Skip Lists: ", times[2]
+		print "Postings Secuenciales SIN Skip Lists: ", times["seqNoSl"]
+		print "Postings Binarias SIN Skip Lists: ", times["binNoSl"]
+		print "Postings Binarias CON Skip Lists: ", times["binSl"]
 		print "-"*50
 
 if __name__ == "__main__":
