@@ -4,6 +4,7 @@ import sys
 import os
 import pickle
 import json
+import time
 
 # Agrego al path la carpeta modulos
 sys.path.insert(0, os.path.abspath("../../modulos"))
@@ -12,6 +13,7 @@ from LexAnalyser import LexAnalyser
 from PicklePersist import PicklePersist
 from Retrievers import BooleanRetriever
 from Postings import BinaryPostings
+from Postings import SequentialPostings
 
 def getParameters():
 	# Obtengo Queries
@@ -57,10 +59,12 @@ def main():
 	documents = pp.load(INDEX_DIR+"documents")
 	print "Cargando punteros a terminos"
 	termToPointer = pp.load(INDEX_DIR+"term_to_pointer")	
-	print "Cargando postings"
-	binPostings = BinaryPostings(INDEX_DIR+"binary_posting.dat", termToPointer)
+	print "Cargando postings binarias"
+	postings = BinaryPostings(INDEX_DIR+"binary_posting.dat", termToPointer)
 	print "Cargando skipList"
-	binPostings.setSkipLists(pp.load(INDEX_DIR+"skip_lists"))	
+	postings.setSkipLists(pp.load(INDEX_DIR+"skip_lists"))	
+	print "Cargando postings secuenciales"
+	seqPostings = SequentialPostings(INDEX_DIR+"seq_posting.txt")
 
 	# Configuro al query manager
 	la = LexAnalyser(config)
@@ -76,10 +80,41 @@ def main():
 
 	# Realizo recuperacion
 	if qm.queries:
-		br = BooleanRetriever(vocabulary, binPostings, documents.content, skipLists=True)
-		docsRank = br.retrieve(qm.queries)
-		# Muestro resultados
-		printRank(docsRank, documents)
+
+		# Donde guardo tiempos de ejecucion de cada corrida
+		times = []
+
+		# Postings secuenciales SIN skip lists
+		br = BooleanRetriever(vocabulary, seqPostings, documents.content)
+		startTime = time.time()
+		print "-"*50
+		print "RECUPERANDO: Postings Secuenciales SIN Skip Lists"
+		br.retrieve(qm.queries)
+		times.append(time.time() - startTime)
+		print "-"*50
+
+		# Postings binarias SIN skip lists
+		#br = BooleanRetriever(vocabulary, postings, documents.content)
+		#startTime = time.time()
+		#print "RECUPERANDO: Postings Binarias SIN Skip Lists"
+		#br.retrieve(qm.queries)
+		times.append(time.time() - startTime)
+		#print "-"*50
+
+		# Postings binarias CON skip lists
+		br = BooleanRetriever(vocabulary, postings, documents.content, skipLists=True)
+		startTime = time.time()
+		print "RECUPERANDO: Postings Binarias CON Skip Lists"
+		br.retrieve(qm.queries)
+		times.append(time.time() - startTime)
+		print "-"*50
+
+		print "\n","-"*50
+		print u"Tiempos de ejecución: "
+		print "Postings Secuenciales SIN Skip Lists: ", times[0]
+		#print "Postings Binarias SIN Skip Lists: ", times[1]
+		print "Postings Binarias CON Skip Lists: ", times[2]
+		print "-"*50
 
 if __name__ == "__main__":
 	main()

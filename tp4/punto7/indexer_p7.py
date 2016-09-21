@@ -9,6 +9,7 @@ from Collection import Collection
 from Indexer import Indexer
 from PicklePersist import PicklePersist
 from Postings import BinaryPostings
+from Postings import SequentialPostings
 
 def getParameters():
 	out = []
@@ -63,9 +64,13 @@ def main():
 
 	sp = BinaryPostings.create(indexer.postings.getAll(), 
 		path=INDEX_DIR, title="binary_posting.dat")
-	print "Postings guardadas en: %s" % sp.path
+	print "Postings binarias guardadas en: %s" % sp.path
 	print "Punteros a terminos guardados en: %s" % pp.save(sp.termToPointer, INDEX_DIR + "term_to_pointer")
 	print "Skip Lists guardadas en: %s" % pp.save(sp.createSkipLists(), INDEX_DIR + "skip_lists")
+
+	sp = SequentialPostings.create(indexer.postings.getAll(), 
+		path=INDEX_DIR, title="seq_posting.txt")
+	print "Postings secuenciales guardadas en: %s" % sp.path
 
 	# Guardo configuracion del index
 	CONFIG_NAME = "config.json"
