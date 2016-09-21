@@ -198,11 +198,36 @@ class BinaryPostings(object):
 
 	@abstractmethod
 	def getAll(self):
-		pass
+		postings = {}
+		for term in self.termToPointer:
+			postings[term] = self.getPosting(term)
+		return postings
 
 	@abstractmethod
-	def getPosting(self, term, file=None):
-		pass    
+	def getPosting(self, term):
+		posting = {}
+		with open(self.path, "rb") as f:
+
+			# Me posiciono en el termino
+			f.seek(self.termToPointer[term])
+
+			# Leo longitud de documents Id
+			bLen = f.read(4)
+			lenDocs = struct.unpack("<I", bLen)[0]
+
+			# Leo documents ids
+			bDocs = f.read(lenDocs * 4)
+			docIds = struct.unpack('<%iI' % lenDocs, bDocs)
+
+			# Leo frecuencias
+			bFreqs = f.read(lenDocs * 4)
+			freqs = struct.unpack('<%if' % lenDocs, bFreqs)
+
+			# Armo posting
+			for i in range(len(docIds)):
+				posting[docIds[i]] = freqs[i]
+
+		return posting
 
 	@abstractmethod
 	def addPosting(self, term, docId, value):
@@ -223,6 +248,23 @@ class BinaryPostings(object):
 	def getValue(self, term, docId):
 		""""Devuelve valor de la posting en el documento dado"""
         pass  
+
+	def getDocsIdFromTerm(self, term):
+		out = {}
+		with open(self.path, "rb") as f:
+
+			# Me posiciono en el termino
+			f.seek(self.termToPointer[term])
+
+			# Leo longitud de documents Id
+			bLen = f.read(4)
+			lenDocs = struct.unpack("<I", bLen)[0]
+
+			# Leo documents ids
+			bDocs = f.read(lenDocs * 4)
+			out = list(struct.unpack('<%iI' % lenDocs, bDocs))
+
+		return out
 
 	def getSkipList(self):
 		p = self.postings.getAll()
