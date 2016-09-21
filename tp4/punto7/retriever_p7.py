@@ -59,6 +59,8 @@ def main():
 	termToPointer = pp.load(INDEX_DIR+"term_to_pointer")	
 	print "Cargando postings"
 	binPostings = BinaryPostings(INDEX_DIR+"binary_posting.dat", termToPointer)
+	print "Cargando skipList"
+	binPostings.setSkipLists(pp.load(INDEX_DIR+"skip_lists"))	
 
 	# Configuro al query manager
 	la = LexAnalyser(config)

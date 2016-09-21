@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 import codecs
 import collections
 import struct
+import numpy as np
 
 class Postings(object):
 	
@@ -177,6 +178,7 @@ class BinaryPostings(object):
 	def __init__(self, path, termToPointer):
 		self.path = path
 		self.termToPointer = termToPointer
+		self.skipLists = {}
 
 	@classmethod
 	def create(self, postings, path="index_data/", title="binary_postings.dat"):
@@ -185,14 +187,15 @@ class BinaryPostings(object):
 		pointer = 0
 		with open(path, "wb") as f:
 			for pId in postings:
-				termToPointer[pId] = pointer
-				bLen = struct.pack('<I', len(postings[pId]))
-				f.write(bLen)
+				termToPointer[pId] = {
+					"pointer": pointer,
+					"lenDocs": len(postings[pId])
+				}
 				docIds = postings[pId].keys()
 				f.write(struct.pack('<%sI' % len(docIds), *docIds))
 				for docId in docIds:
 					f.write(struct.pack('<f', postings[pId][docId]))
-				pointer += 4 + len(docIds) * 4 * 2
+				pointer += len(docIds) * 4 * 2
 		return BinaryPostings(path, termToPointer)
 
 
@@ -209,11 +212,10 @@ class BinaryPostings(object):
 		with open(self.path, "rb") as f:
 
 			# Me posiciono en el termino
-			f.seek(self.termToPointer[term])
+			f.seek(self.termToPointer[term]["pointer"])
 
 			# Leo longitud de documents Id
-			bLen = f.read(4)
-			lenDocs = struct.unpack("<I", bLen)[0]
+			lenDocs = self.termToPointer[term]["lenDocs"]
 
 			# Leo documents ids
 			bDocs = f.read(lenDocs * 4)
@@ -257,8 +259,7 @@ class BinaryPostings(object):
 			f.seek(self.termToPointer[term])
 
 			# Leo longitud de documents Id
-			bLen = f.read(4)
-			lenDocs = struct.unpack("<I", bLen)[0]
+			lenDocs = self.termToPointer[term]["lenDocs"]
 
 			# Leo documents ids
 			bDocs = f.read(lenDocs * 4)
@@ -266,8 +267,32 @@ class BinaryPostings(object):
 
 		return out
 
-	def getSkipList(self):
-		p = self.postings.getAll()
-		for i in p:
-			print p[i]
-			totalSkipPointers = int(np.sqrt(len(p[i]))) + 1
+	def createSkipLists(self):
+		skipLists = {}
+		with open(self.path, "rb") as f:
+			for term in self.termToPointer:
+				# Leo longitud de documents Id
+				lenDocs = self.termToPointer[term]["lenDocs"]
+				
+				if lenDocs < 2:
+					totalSkipPointers = lenDocs
+				else:
+					totalSkipPointers = int(np.sqrt(lenDocs)) + 1
+				step = lenDocs / totalSkipPointers
+
+				sl = collections.OrderedDict()
+				pointer = self.termToPointer[term]["pointer"]
+				for i in range(totalSkipPointers):
+					pointer += (step - 1) * 4
+					f.seek(pointer)
+					bDoc = f.read(4)
+					docId = struct.unpack('<I', bDoc)[0]
+					sl[docId] = pointer
+					pointer += 4
+
+				skipLists[term] = sl
+
+		return skipLists
+
+	def setSkipLists(self, sl):
+		self.skipLists = sl
