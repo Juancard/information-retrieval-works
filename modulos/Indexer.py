@@ -2,6 +2,7 @@
 
 import sys
 import codecs
+import numpy as np
 from LexAnalyser import LexAnalyser
 from Vocabulary import Vocabulary
 from Postings import DictionaryPostings
@@ -211,3 +212,4 @@ class Indexer(object):
 				total += p[d] ** 2.0
 			documentsNorm[d] = total ** 0.5
 		return documentsNorm
+

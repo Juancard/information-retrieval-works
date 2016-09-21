@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 import codecs
 import collections
+import struct
 
 class Postings(object):
 	
@@ -169,3 +170,62 @@ class SequentialPostings(Postings):
 
 	def getDocsIdFromTerm(self, term):
 		return self.getPosting(term).keys()
+
+
+class BinaryPostings(object):
+	
+	def __init__(self, path, termToPointer):
+		self.path = path
+		self.termToPointer = termToPointer
+
+	@classmethod
+	def create(self, postings, path="index_data/", title="binary_postings.dat"):
+		path = path + title
+		termToPointer = {}
+		pointer = 0
+		with open(path, "wb") as f:
+			for pId in postings:
+				termToPointer[pId] = pointer
+				bLen = struct.pack('<I', len(postings[pId]))
+				f.write(bLen)
+				docIds = postings[pId].keys()
+				f.write(struct.pack('<%sI' % len(docIds), *docIds))
+				for docId in docIds:
+					f.write(struct.pack('<f', postings[pId][docId]))
+				pointer += 4 + len(docIds) * 4 * 2
+		return BinaryPostings(path, termToPointer)
+
+
+	@abstractmethod
+	def getAll(self):
+		pass
+
+	@abstractmethod
+	def getPosting(self, term, file=None):
+		pass    
+
+	@abstractmethod
+	def addPosting(self, term, docId, value):
+		""""Agrega posting"""
+        pass   
+
+	@abstractmethod
+	def addDocToPosting(self, term, docId, value):
+		""""Agrega documento a la posting"""
+        pass   
+        
+	@abstractmethod
+	def isPosting(self, term):
+		""""Devuelve verdadero si existe la posting para el termino dado"""
+        pass   
+
+	@abstractmethod
+	def getValue(self, term, docId):
+		""""Devuelve valor de la posting en el documento dado"""
+        pass  
+
+	def getSkipList(self):
+		p = self.postings.getAll()
+		for i in p:
+			print p[i]
+			totalSkipPointers = int(np.sqrt(len(p[i]))) + 1
