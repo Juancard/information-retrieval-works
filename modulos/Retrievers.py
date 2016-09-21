@@ -2,10 +2,11 @@
 
 class BooleanRetriever(object):
 	"""Realiza recuperaciones en base al modelo booleano"""
-	def __init__(self, vocabulary, postings, documents):
+	def __init__(self, vocabulary, postings, documents, skipLists=False):
 		self.vocabulary = vocabulary
 		self.postings = postings
 		self.documents = documents
+		self.skipLists = skipLists
 
 	def retrieve(self, queries):
 		retrieved = {}
@@ -35,8 +36,20 @@ class BooleanRetriever(object):
 		return retrieved
 	
 	def intersect(self, terms):
-		if not terms:
-			return set()
+		# SI NO HAY TERMINOS DEVUELVO CONJUNTO VACIO
+		if not terms: return set()
+
+		#Si alguno de los terminos no se encuentra en el vocabulario
+		# se devuelve conjunto vacio
+		for t in terms:
+			if t not in self.vocabulary.content: return set()
+
+		if self.skipLists:
+			if len(terms) > 1:
+				t1 = self.vocabulary.getId(list(terms)[0])
+				t2 = self.vocabulary.getId(list(terms)[1])
+				return self.postings.intersectWithSkip(t1, t2)
+		
 		out = set(self.documents)
 
 		for t in terms:

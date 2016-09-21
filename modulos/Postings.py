@@ -69,8 +69,11 @@ class DictionaryPostings(Postings):
 
 	def sortByKey(self):
 		ordered = collections.OrderedDict()
-		for key, values in sorted(self.content.items()):
-			ordered[key] = values
+		for t, tValues in sorted(self.content.items()):
+			tValuesOrdered = collections.OrderedDict()
+			for d, dValues in sorted(tValues.items()):
+				tValuesOrdered[d] = dValues
+			ordered[t] = tValuesOrdered
 		self.content = ordered
 
 	def termToId(self, term, termId):
@@ -256,7 +259,7 @@ class BinaryPostings(object):
 		with open(self.path, "rb") as f:
 
 			# Me posiciono en el termino
-			f.seek(self.termToPointer[term])
+			f.seek(self.termToPointer[term]["pointer"])
 
 			# Leo longitud de documents Id
 			lenDocs = self.termToPointer[term]["lenDocs"]
@@ -296,3 +299,39 @@ class BinaryPostings(object):
 
 	def setSkipLists(self, sl):
 		self.skipLists = sl
+
+	def intersectWithSkip(self, t1, t2):
+		out = set()
+
+		p1 = self.termToPointer[t1]["pointer"]
+		endP1 = p1 + (self.termToPointer[t1]["lenDocs"] * 4)
+		p2 = self.termToPointer[t2]["pointer"]
+		endP2 = p2 + (self.termToPointer[t2]["lenDocs"] * 4)
+		with open(self.path, "rb") as f:
+			while p1 < endP1 and p2 < endP2:
+				f.seek(p1)
+				docT1 = struct.unpack("<I", f.read(4))[0]
+				f.seek(p2)
+				docT2 = struct.unpack("<I", f.read(4))[0]
+				if docT1 == docT2:
+					out.add(docT1)
+					p1 += 4; p2 += 4
+				elif docT1 < docT2:
+					p1HasChanged = False
+					for skipDoc in self.skipLists[t1]:
+						if skipDoc <= docT2:
+							if skipDoc > docT1:
+								p1 = self.skipLists[t1][skipDoc]
+								p1HasChanged = True
+						else: break
+					if not p1HasChanged: p1 += 4
+				else:
+					p2HasChanged = False
+					for skipDoc in self.skipLists[t2]:
+						if skipDoc <= docT1:
+							if skipDoc > docT2:
+								p2 = self.skipLists[t2][skipDoc]
+								p2HasChanged = True
+						else: break
+					if not p2HasChanged: p2 += 4
+		return out

@@ -76,7 +76,7 @@ def main():
 
 	# Realizo recuperacion
 	if qm.queries:
-		br = BooleanRetriever(vocabulary, binPostings, documents.content)
+		br = BooleanRetriever(vocabulary, binPostings, documents.content, skipLists=True)
 		docsRank = br.retrieve(qm.queries)
 		# Muestro resultados
 		printRank(docsRank, documents)
