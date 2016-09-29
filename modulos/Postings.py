@@ -53,9 +53,12 @@ class DictionaryPostings(Postings):
 		return self.content[term]
 
 	def addPosting(self, term, docId, value):
-		self.content[term] = {
-			docId: value
-		}
+		if term not in self.content:
+			self.content[term] = {
+				docId: value
+			}
+		else:
+			self.addDocToPosting(term, docId, value)
 
 	def addDocToPosting(self, term, docId, value):
 		if term in self.content:
@@ -178,13 +181,15 @@ class SequentialPostings(Postings):
 
 class BinaryPostings(object):
 	
-	def __init__(self, path, termToPointer):
+	def __init__(self, path, termToPointer, dgaps=False):
 		self.path = path
 		self.termToPointer = termToPointer
 		self.skipLists = {}
+		self.dgaps = False
 
 	@classmethod
-	def create(self, postings, path="index_data/", title="binary_postings.dat"):
+	def create(self, postings, path="index_data/", 
+			title="binary_postings.dat", dgaps=False):
 		path = path + title
 		termToPointer = {}
 		pointer = 0
@@ -195,12 +200,22 @@ class BinaryPostings(object):
 					"lenDocs": len(postings[pId])
 				}
 				docIds = postings[pId].keys()
-				f.write(struct.pack('<%sI' % len(docIds), *docIds))
+				if dgaps:
+					docsToWrite = self.deltaEncode(self, docIds)
+				else:
+					docsToWrite = docIds
+				f.write(struct.pack('<%sI' % len(docsToWrite), *docsToWrite))
 				for docId in docIds:
 					f.write(struct.pack('<f', postings[pId][docId]))
 				pointer += len(docIds) * 4 * 2
-		return BinaryPostings(path, termToPointer)
+		return BinaryPostings(path, termToPointer, dgaps)
 
+	@staticmethod
+	def deltaEncode(self, docsId):
+		out = [docsId[0]]
+		for i in range(1, len(docsId)):
+			out.append(docsId[i] - docsId[i-1])
+		return out
 
 	def getAll(self):
 		postings = {}
