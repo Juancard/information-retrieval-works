@@ -66,7 +66,7 @@ class RegexTokenizer(object):
 	def extraerNumeros(self,linea):
 
 		date = r"[0-9]{1,2}[\/|\-][0-9]{1,2}[\/|\-](?:[0-9]{2,4})"
-		porcentaje = r"(\+\-)?[0-9]+()?[0-9]*%"
+		porcentaje = r"(\+\-)?[0-9]+(.)?[0-9]*%"
 		moneda = r"\$\d+(?:,\d{1,2})?"
 		
 		# Demasiados falsos positivos:

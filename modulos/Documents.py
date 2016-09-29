@@ -6,8 +6,7 @@ class Documents(object):
 		self.content = {}
 
 	def addDocument(self, docId, name):
-		if self.isDocument:
-			self.content[docId] = name
+		self.content[docId] = name
 
 	def isDocument(self, docId):
 		return docId in self.content

@@ -18,8 +18,6 @@ class Query(object):
 		self.num = num
 		self.title = title
 		self.terms = []
-		self.bagOfWords = {}
-		self.setOfWords = set()
 		self.booleanOperator = False
 		self.positionalOperator = False
 		self.phraseOperator = False
