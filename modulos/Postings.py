@@ -188,6 +188,7 @@ class BinaryPostings(object):
 		self.dgaps = False
 
 	@classmethod
+	# CUIDADO: DGAPS AUN NO COMPLETO, NO IMPLEMENTAR
 	def create(self, postings, path="index_data/", 
 			title="binary_postings.dat", dgaps=False):
 		path = path + title
