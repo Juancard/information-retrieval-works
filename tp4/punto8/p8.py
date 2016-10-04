@@ -36,7 +36,6 @@ Ejemplo:
 def main():
 	corpusTxt = getParameters()[0]
 	vocabulary = collections.OrderedDict()
-	postings = DictionaryPostings({})
 	start = time.time()
 	with open("binary_postings.dat", mode='wb') as postingsFile:
 		with codecs.open(corpusTxt, mode='rt', encoding='utf-8') as dumpFile:
@@ -57,7 +56,7 @@ def main():
 					"skip_list": collections.OrderedDict()
 				}
 
-				# Tomo docs id de archivo
+				# Tomo docs id de la actual linea del archivo
 				docs = docs.split(",")
 				for i in range(len(docs)):
 					try: docs[i] = int(docs[i])
@@ -104,6 +103,7 @@ def main():
 				termId += 1
 
 	print "time:",time.time() - start
+	print termId
 
 # funcion para chequear que posting se creo correctamente
 def testBinaryFile(vocabulary):
