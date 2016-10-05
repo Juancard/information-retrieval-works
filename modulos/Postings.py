@@ -166,7 +166,7 @@ class SequentialPostings(Postings):
 			return False
 
 	def makePostingFromString(self, strPosting):
-		posting = {}
+		posting = collections.OrderedDict()
 		for doc in strPosting.split(self.SEPARATOR_DOC):
 			values = doc.split(self.SEPARATOR_VALUE)
 			if len(values) == 2:
@@ -192,7 +192,7 @@ class BinaryPostings(object):
 	def create(self, postings, path="index_data/", 
 			title="binary_postings.dat", dgaps=False):
 		path = path + title
-		termToPointer = {}
+		termToPointer = collections.OrderedDict()
 		pointer = 0
 		with open(path, "wb") as f:
 			for pId in postings:
@@ -212,6 +212,7 @@ class BinaryPostings(object):
 		return BinaryPostings(path, termToPointer, dgaps)
 
 	@staticmethod
+	# NO IMPLEMENTAR
 	def deltaEncode(self, docsId):
 		out = [docsId[0]]
 		for i in range(1, len(docsId)):
@@ -219,13 +220,13 @@ class BinaryPostings(object):
 		return out
 
 	def getAll(self):
-		postings = {}
+		postings = collections.OrderedDict()
 		for term in self.termToPointer:
 			postings[term] = self.getPosting(term)
 		return postings
 
 	def getPosting(self, term):
-		posting = {}
+		posting = collections.OrderedDict()
 		with open(self.path, "rb") as f:
 
 			# Me posiciono en el termino

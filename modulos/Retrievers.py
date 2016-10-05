@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import collections
 
 class BooleanRetriever(object):
 	"""Realiza recuperaciones en base al modelo booleano"""
@@ -227,6 +228,83 @@ class VectorRetriever(object):
 				if t in self.vocabulary.content:
 					queriesWeight[q.num][t] = qBow[t] * self.vocabulary.getIdf(t) 
 		return queriesWeight
+
+	def term_at_a_time(self, queries, topk):
+		rank = {}
+		if self.weight == self.WEIGHT_TF_IDF:
+			queries = self.getQueriesWeight(queries)
+
+		for q in queries:
+			postings = {}
+
+			# Inicializo valores a cero
+			rank[q] = collections.defaultdict(int)
+
+			# Guardo postings de cada término
+			for t in queries[q]:
+				termId = self.vocabulary.getId(t)
+				postings[termId] = self.postings.getPosting(termId)
+			
+			# Acumulo score
+			for p in postings:
+				for doc in postings[p]:
+					rank[q][doc] += postings[p][doc]
+
+			# Ordeno por frecuencia y doc y devuelvo tuplas (doc, score)
+			orderedList = sorted(rank[q].items(), key = lambda l:( l[1], l[0]), reverse=True)[0:topk]
+			
+			# Cargo resultado final del query
+			rank[q] = collections.OrderedDict()
+			for doc, score in orderedList:
+				rank[q][doc] = score
+
+		return rank
+
+	def document_at_a_time(self, queries, topk):
+		if self.weight == self.WEIGHT_TF_IDF:
+			queries = self.getQueriesWeight(queries)
+
+		rank = {}
+		for q in queries:
+			postings = {}
+			rank[q] = {}
+			# Guardo postings de cada término
+			for t in queries[q]:
+				termId = self.vocabulary.getId(t)
+				postings[termId] = self.postings.getPosting(termId)
+			
+			# Score mínimo aceptable en ranking
+			minScore = 0
+			for d in self.documentsTerms:
+				d_score = 0
+				for post in postings:
+					if d in postings[post]:
+						d_score += postings[post][d]
+
+				# Solo agrego doc si supera el minimo score
+				if d_score > minScore:	
+					rank[q][d] = d_score
+
+					# Si hay mas de k documentos
+					if len(rank[q]) > topk:
+						
+						# Elimino el documento de menor score (y de mayor docid en caso de empate)
+						min_value = min(rank[q].values())
+						max_key = max([k for k in rank[q] if rank[q][k] == min_value])
+						rank[q].pop(max_key)
+						
+						# Establezco nuevo score minimo
+						minScore = rank[q][min(rank[q], key=rank[q].get)]
+
+			# Ordeno por frecuencia y doc y devuelvo tuplas (doc, score)
+			orderedList =sorted(rank[q].items(), key = lambda l:( l[1], l[0]), reverse=True)[0:topk]
+			
+			# Cargo resultado final del query
+			rank[q] = collections.OrderedDict()
+			for doc, score in orderedList:
+				rank[q][doc] = score
+
+		return rank
 
 	def getScalarProductRank(self, query):
 		scalarProduct = {}
