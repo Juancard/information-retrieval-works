@@ -4,6 +4,7 @@ import os
 import json
 import numpy as np
 import collections 
+import time
 
 # Agrego al path la carpeta modulos
 sys.path.insert(0, os.path.abspath("../../modulos"))
@@ -64,7 +65,7 @@ def deltaDesencode(docs):
 		docs[i] = acum
 	return docs
 
-def compress(toCompress):
+def eliaGammaCompress(toCompress):
 	compressed = []
 
 	# K: entero a comprimir
@@ -84,7 +85,7 @@ def compress(toCompress):
 
 	return compressed
 
-def decompress(compressed):
+def eliaGammaDecompress(compressed):
 	decompressed = []
 
 	# Se empieza leyendo valor en unario
@@ -128,6 +129,34 @@ def decompress(compressed):
 
 	return decompressed
 
+def vbyteCompress(toCompress):
+	compressed = ""
+	for k in toCompress:
+		bytesList = []
+		while True:
+			separator = str(0)
+			if not bytesList:
+				separator = str(1)
+			bytesList.append(separator + ic.dec_to_bin(k % 128, 7))
+			if k < 128: break
+			k /= 128
+		bytes_k = "".join(list(reversed(bytesList)))
+		compressed += bytes_k
+	return compressed
+
+def vbyteDecompress(compressed):
+	decompressed = []
+	chars = 8
+	k_binary = ""
+	for i in range(0, len(compressed), chars):
+		byteRead = compressed[i:chars + i]
+		firstBit = byteRead[0]
+		k_binary += byteRead[1:chars]
+		if firstBit == str(1):
+			decompressed.append(ic.bin_to_dec(list(k_binary), len(k_binary)))
+			k_binary = ""
+	return decompressed
+
 def main():
 	# Obtengo parametros
 	p = getParameters()
@@ -147,27 +176,94 @@ def main():
 	indexer.index(indexConfig)
 
 	postings = indexer.postings.getAll()
+	executionTimes = {}
+	compressedLength = {}
+
+	# Comprimo en elia-gamma
+	print "Comprimiendo en ELIA-GAMMA"
 	postingsCompressed = {}
+	compressedLength["elia"] = 0
+	startTime = time.time()
 	for p in postings:
 		# Obtengo listas a comprimir
 		docs = deltaEncode(postings[p].keys())
 		freqs = [int(k) for k in postings[p].values()]
 		
 		# Comprimo y guardo
-		postingsCompressed[p] = [compress(docs), compress(freqs)]
-
-	# Descomprimo
+		docs = eliaGammaCompress(docs)
+		freqs = eliaGammaCompress(freqs)
+		compressedLength["elia"] += len(docs) + len(freqs)
+		postingsCompressed[p] = [docs, freqs]
+	executionTimes["elia_compress"] = time.time() - startTime
+	
+	# Descomprimo elia gamma
+	print "Descomprimiendo en ELIA-GAMMA"
+	startTime = time.time()
 	postings = collections.OrderedDict()
 	for p in postingsCompressed:
 		postings[p] = collections.OrderedDict()
-		docsGapped = decompress(postingsCompressed[p][0])
+		# degappeo y luego descomprimo documents id
+		docsGapped = eliaGammaDecompress(postingsCompressed[p][0])
 		docsDecompressed = deltaDesencode(docsGapped)
-		freqsDecompressed = decompress(postingsCompressed[p][1])
+		# Descomprimo frecuencias
+		freqsDecompressed = eliaGammaDecompress(postingsCompressed[p][1])
+		# Cargo posting descomprimida
 		for i in range(len(docsDecompressed)):
 			postings[p][docsDecompressed[i]] = freqsDecompressed[i] + 0.0
-	
+	executionTimes["elia_decompress"] = time.time() - startTime
 
+	# Comprimo en v-byte 
+	print "Comprimiendo en V-BYTE"
+	postingsCompressed = {}
+	startTime = time.time()
+	compressedLength["vbyte"] = 0
+	for p in postings:
+		# Obtengo listas a comprimir
+		docs = deltaEncode(postings[p].keys())
+		freqs = [int(k) for k in postings[p].values()]
+		# Comprimo y guardo
+		docs = vbyteCompress(docs)
+		freqs = vbyteCompress(freqs)
+		compressedLength["vbyte"] += len(docs) + len(freqs)
+		postingsCompressed[p] = [docs, freqs]
+	executionTimes["vbyte_compress"] = time.time() - startTime
 
+	# Descomprimo en v-byte
+	print "Descomprimiendo en V-BYTE"
+	startTime = time.time()
+	postings2 = collections.OrderedDict()
+	for p in postingsCompressed:
+		postings2[p] = collections.OrderedDict()
+		# degappeo y luego descomprimo documents id
+		docsGapped = vbyteDecompress(postingsCompressed[p][0])
+		docsDecompressed = deltaDesencode(docsGapped)
+		# Descomprimo frecuencias
+		freqsDecompressed = vbyteDecompress(postingsCompressed[p][1])
+		# Cargo posting descomprimida
+		for i in range(len(docsDecompressed)):
+			postings2[p][docsDecompressed[i]] = freqsDecompressed[i] + 0.0
+	executionTimes["vbyte_decompress"] = time.time() - startTime
+
+	# Calculo tamanos finales
+
+	# se suman los 4 bits del id de cada termino
+	compressedLength["elia"] += 4 * len(postings)
+	compressedLength["vbyte"] += 4 * len(postings)
+
+	#y paso valores a KiloBytes
+	compressedLength["elia"] /= 8.0 * 1000 
+	compressedLength["vbyte"] /= 8.0 * 1000 
+
+	print "-"*50
+	print u"\nTIEMPOS DE EJECUCIÓN\n"
+	print u"ELIA-GAMMA compresión: ", executionTimes["elia_compress"]
+	print u"ELIA-GAMMA descompresión: ", executionTimes["elia_decompress"]
+	print u"Tamaño del comprimido: %.2f KiloBytes" % compressedLength["elia"]
+ 
+	print u"\nV-BYTE compresión: ", executionTimes["vbyte_compress"]
+	print u"V-BYTE descompresión: ", executionTimes["vbyte_decompress"]
+	print u"Tamaño del comprimido: %.2f KiloBytes" % compressedLength["vbyte"]
+	print "\n"+("-"*50)
 
 if __name__ == "__main__":
 	main()
