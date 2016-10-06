@@ -88,12 +88,12 @@ def main():
 		times = {}
 
 		startTime = time.time()
-		rankTaat = vr.term_at_a_time(qm.queries, 10)
-		times["taat"] = time.time() - startTime
-
-		startTime = time.time()
 		rankDaat = vr.document_at_a_time(qm.queries, 10)
 		times["daat"] = time.time() - startTime
+
+		startTime = time.time()
+		rankTaat = vr.term_at_a_time(qm.queries, 10)
+		times["taat"] = time.time() - startTime
 
 		print "\n","-"*50
 		print "Rankings de daat y taat son iguales? ", rankDaat == rankTaat
