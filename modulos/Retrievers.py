@@ -183,12 +183,12 @@ class VectorRetriever(object):
 	RANK_JACCARD = "jaccard"
 	RANK_DICE = "dice"
 
-	def __init__(self, vocabulary, postings, documentsTerms, 
+	def __init__(self, vocabulary, postings, documents, 
 		weight=WEIGHT_TF_IDF, rank=RANK_SCALAR_PRODUCT,
 		documentsNorm={}):
 		self.vocabulary = vocabulary
 		self.postings = postings
-		self.documentsTerms = documentsTerms
+		self.documents = documents
 		self.documentsNorm = documentsNorm
 		self.weight = weight
 		self.rank = rank
@@ -275,7 +275,7 @@ class VectorRetriever(object):
 			
 			# Score mínimo aceptable en ranking
 			minScore = 0
-			for d in self.documentsTerms:
+			for d in self.documents:
 				d_score = 0
 				for post in postings:
 					if d in postings[post]:
@@ -308,12 +308,18 @@ class VectorRetriever(object):
 
 	def getScalarProductRank(self, query):
 		scalarProduct = {}
-		for d in self.documentsTerms:
+		postings = {}
+
+		for t in query:
+			termId = self.vocabulary.getId(t)
+			post = self.postings.getPosting(termId)
+			postings[t] = post
+
+		for d in self.documents:
 			sp = 0.0
-			for t in query:
-				termId = self.vocabulary.getId(t)
-				if termId in self.documentsTerms[d]:
-					sp += self.postings.getPosting(termId)[d] * query[t]
+			for t in postings:
+				if d in postings[t]:
+					sp += postings[t][d] * query[t]
 			if sp > 0.0:
 				scalarProduct[d] = sp
 		return scalarProduct

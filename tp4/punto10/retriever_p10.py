@@ -58,16 +58,13 @@ def main():
 	print "Cargando documentos"
 	documents = pp.load(INDEX_DIR+"documents")
 	print "Cargando punteros a terminos"
-	termToPointer = pp.load(INDEX_DIR+"term_to_pointer")	
-	print "Cargando documentsTerms"
-	# PARCHE
-	documentsTerms = documents.content
+	termToPointer = pp.load(INDEX_DIR+"term_to_pointer")
 	print "Cargando postings binarias"
 	postings = BinaryPostings(INDEX_DIR+"binary_posting.dat", termToPointer)
 
 	print "Cargando Retriever"
 	vr = VectorRetriever(vocabulary, postings, 
-		documentsTerms)
+		documents.content)
 
 	# Configuro al query manager
 	la = LexAnalyser(config)

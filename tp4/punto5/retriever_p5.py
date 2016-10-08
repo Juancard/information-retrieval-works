@@ -66,8 +66,6 @@ def main():
 	documents = pp.load(INDEX_DIR+"documents")
 	print "Cargando postings"
 	seqFreqPostings = SequentialPostings(INDEX_DIR+"seq_freq_posting.txt")
-	print "Cargando documentsTerms"
-	documentsTerms = pp.load(INDEX_DIR+"documentsTerms")
 
 	rank = getRetrievalRankFromMenu()
 	docsNorm = {}
@@ -77,7 +75,7 @@ def main():
 
 	print "Cargando Retriever"
 	vr = VectorRetriever(vocabulary, seqFreqPostings, 
-		documentsTerms, rank=rank, documentsNorm=docsNorm)
+		documents.content, rank=rank, documentsNorm=docsNorm)
 	
 	# Configuro al query manager
 	la = LexAnalyser(config)

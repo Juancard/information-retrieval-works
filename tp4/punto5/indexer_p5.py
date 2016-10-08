@@ -64,7 +64,6 @@ def main():
 	pp = PicklePersist()
 	print "Vocabulario guardado en: %s" % pp.save(indexer.vocabulary, INDEX_DIR + "vocabulary")
 	print "Documentos guardados en: %s" % pp.save(indexer.documents, INDEX_DIR + "documents")
-	print "Documents Terms guardado en %s" % pp.save(indexer.documentsTerms, INDEX_DIR + "documentsTerms")
 	print "Documents Norm guardado en %s" % pp.save(docsNorm, INDEX_DIR + "documentsNorm")
 
 	spFreq = SequentialPostings.create(indexer.postings.getAll(), 
