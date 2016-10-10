@@ -68,7 +68,7 @@ class Indexer(object):
 		#----------------FIN-LEER-COLECCION---------#
 		print "Generando stats"
 		self.endStats()
-		print u"Ordenando vocabulario alfabéticamente"
+		print u"Ordenando vocabulario alfabeticamente"
 		self.vocabulary.setAlphabeticalOrder()
 		print u"Generando id de los términos"
 		self.setTermsId()

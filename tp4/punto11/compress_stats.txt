@@ -1,0 +1,10 @@
+
+TIEMPOS DE EJECUCIÓN
+ELIA-GAMMA compresión: 3.1599 seg.
+ELIA-GAMMA descompresión: 2.8419 seg.
+V-BYTE compresión: 1.8812 seg.
+V-BYTE descompresión: 3.2650 seg.
+
+TAMAÑOS DEL COMPRIMIDO
+ELIA-GAMMA: 174.53 KiloBytes
+V-BYTE: 255.44 KiloBytes

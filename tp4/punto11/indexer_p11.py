@@ -5,6 +5,7 @@ import json
 import numpy as np
 import collections 
 import time
+import codecs
 
 # Agrego al path la carpeta modulos
 sys.path.insert(0, os.path.abspath("../../modulos"))
@@ -254,16 +255,24 @@ def main():
 	compressedLength["elia"] /= 8.0 * 1000 
 	compressedLength["vbyte"] /= 8.0 * 1000 
 
+	print "\n"+"-"*50
+	with codecs.open("compress_stats.txt", mode='wt', encoding='utf-8') as f:
+		toWrite = []
+		toWrite.append(u"\nTIEMPOS DE EJECUCIÓN\n")
+
+		toWrite.append(u"ELIA-GAMMA compresión: %.4f seg.\n" % (executionTimes["elia_compress"]))
+		toWrite.append(u"ELIA-GAMMA descompresión: %.4f seg.\n" % (executionTimes["elia_decompress"]))
+		toWrite.append(u"V-BYTE compresión: %.4f seg.\n" % (executionTimes["vbyte_compress"]))
+		toWrite.append(u"V-BYTE descompresión: %.4f seg.\n" % (executionTimes["vbyte_decompress"]))
+			
+		toWrite.append(u"\nTAMAÑOS DEL COMPRIMIDO\n")
+		toWrite.append(u"ELIA-GAMMA: %.2f KiloBytes\n" % compressedLength["elia"])
+		toWrite.append(u"V-BYTE: %.2f KiloBytes\n" % compressedLength["vbyte"])
+
+		toWrite = "".join(toWrite)
+		f.write(toWrite)
+		print toWrite
 	print "-"*50
-	print u"\nTIEMPOS DE EJECUCIÓN\n"
-	print u"ELIA-GAMMA compresión: ", executionTimes["elia_compress"]
-	print u"ELIA-GAMMA descompresión: ", executionTimes["elia_decompress"]
-	print u"Tamaño del comprimido: %.2f KiloBytes" % compressedLength["elia"]
- 
-	print u"\nV-BYTE compresión: ", executionTimes["vbyte_compress"]
-	print u"V-BYTE descompresión: ", executionTimes["vbyte_decompress"]
-	print u"Tamaño del comprimido: %.2f KiloBytes" % compressedLength["vbyte"]
-	print "\n"+("-"*50)
 
 if __name__ == "__main__":
 	main()
