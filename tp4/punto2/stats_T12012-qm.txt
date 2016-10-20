@@ -1,0 +1,8 @@
+Coleccion: T12012-qm
+Listas de posteo:
+	Tamano minimo: 1 documentos
+	Tamano maximo: 10 documentos
+	Tamano promedio: 1.93 documentos
+Tamano de la coleccion: 83824 bytes
+Tamano del indice: 173633 bytes
+Overhead: 67.44%

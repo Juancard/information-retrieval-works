@@ -1,0 +1,8 @@
+Coleccion: T12012-gr
+Listas de posteo:
+	Tamano minimo: 1 documentos
+	Tamano maximo: 346 documentos
+	Tamano promedio: 3.83 documentos
+Tamano de la coleccion: 6144609 bytes
+Tamano del indice: 3602554 bytes
+Overhead: 36.96%

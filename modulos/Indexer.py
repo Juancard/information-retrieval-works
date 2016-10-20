@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 import codecs
 import numpy as np
 from LexAnalyser import LexAnalyser
@@ -28,18 +29,18 @@ class Indexer(object):
 
 		#-----------------LEER-COLECCION--------------#
 		docId = 0
-		for fileName in self.collection.onlyFiles():
+		for filePath in self.collection.allFiles():
 
 			# Guardo los datos del archivo actual
 			actualDoc = {
-				"name": fileName,
-				"path": self.collection.path + fileName
+				"name": os.path.basename(os.path.normpath(filePath)),
+				"path": filePath
 			} 	
 
 			#----------LEER-ARCHIVO--------------------#
 
-			print "Cargando "+actualDoc["name"]
-			with codecs.open(actualDoc["path"], mode='rt', encoding='utf-8') as f:
+			print "Cargando " + actualDoc["name"]
+			with codecs.open(filePath, mode='rt', encoding='utf-8') as f:
 				
 				# GUardo tokens y terminos del documento
 				tokens = []

@@ -1,0 +1,8 @@
+Coleccion: tp2_2
+Listas de posteo:
+	Tamano minimo: 1 documentos
+	Tamano maximo: 3 documentos
+	Tamano promedio: 1.65 documentos
+Tamano de la coleccion: 308 bytes
+Tamano del indice: 1495 bytes
+Overhead: 82.92%

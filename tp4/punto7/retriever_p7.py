@@ -110,7 +110,7 @@ def main():
 		print "-"*50
 
 		print "\n","-"*50
-		print u"Tiempos de ejecución: "
+		print "Tiempos de ejecucion: "
 		print "Postings Secuenciales SIN Skip Lists: ", times["seqNoSl"]
 		print "Postings Binarias SIN Skip Lists: ", times["binNoSl"]
 		print "Postings Binarias CON Skip Lists: ", times["binSl"]

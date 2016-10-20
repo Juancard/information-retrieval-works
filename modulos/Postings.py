@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 import codecs
 import collections
 import struct
+import sys
 import numpy as np
 
 class Postings(object):
@@ -88,6 +89,28 @@ class DictionaryPostings(Postings):
 			return True
 		except KeyError:
 			return False
+
+	def getStats(self):
+		allPostings = self.getAll()
+		stats = {}
+	
+		if allPostings:
+			# Inicializo valores
+			stats["min_len_posting"] = sys.maxint
+			stats["max_len_posting"] = 0
+			stats["sum_len_posting"] = 0.0
+	
+			for p in allPostings:
+				lenP = len(allPostings[p])
+				if lenP > stats["max_len_posting"]:
+					stats["max_len_posting"] = lenP
+				if lenP < stats["min_len_posting"]:
+					stats["min_len_posting"] = lenP
+				stats["sum_len_posting"] += lenP
+	
+			stats["mean_len_posting"] = stats["sum_len_posting"] / len(allPostings)
+
+		return stats
 
 class SequentialPostings(Postings):
 
