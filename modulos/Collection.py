@@ -16,7 +16,7 @@ class Collection(object):
 
 	def onlyFiles(self):
 		"""Devuelve solo los archivos de la coleccion"""
-		return [f for f in self.content if os.path.isfile(os.path.join(self.path, f))]
+		return [os.path.join(self.path, f) for f in self.content if os.path.isfile(os.path.join(self.path, f))]
 
 	def filesAndDirectories(self):
 		"""Devuelve archivos y subdirectorios de la coleccion"""
