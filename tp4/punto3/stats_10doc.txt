@@ -1,0 +1,8 @@
+Coleccion: 10doc
+Listas de posteo:
+	Tamano minimo: 1 documentos
+	Tamano maximo: 6 documentos
+	Tamano promedio: 1.23 documentos
+Tamano de la coleccion: 10202 bytes
+Tamano del indice: 35431 bytes
+Overhead: 77.64%
