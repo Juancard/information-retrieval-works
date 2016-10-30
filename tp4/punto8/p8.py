@@ -12,6 +12,7 @@ import collections
 import time
 import struct
 import numpy as np
+from BTrees.OOBTree import OOBTree
 
 sys.path.insert(0, os.path.abspath("../../modulos"))
 from PicklePersist import PicklePersist
@@ -35,8 +36,9 @@ Ejemplo:
 
 def main():
 	corpusTxt = getParameters()[0]
-	vocabulary = collections.OrderedDict()
+	vocabulary = OOBTree()
 	start = time.time()
+
 	with open("binary_postings.dat", mode='wb') as postingsFile:
 		with codecs.open(corpusTxt, mode='rt', encoding='utf-8') as dumpFile:
 			termId = 1; pointer = 0
@@ -48,8 +50,8 @@ def main():
 
 				print "Cargando: ",term
 				
-				# Cargando data del vocabulario
-				vocabulary[term] = {
+				# Seteando data del vocabulario
+				vocabularyValues = {
 					"id": termId,
 					"df": df,
 					"pointer": pointer,
@@ -85,7 +87,7 @@ def main():
 					previousPos = actualPos - 1
 					if previousPos < 0:
 						previousPos = 0
-					vocabulary[term]["skip_list"][docs[previousPos]] = pointer + (actualPos * 4)
+					vocabularyValues["skip_list"][docs[previousPos]] = pointer + (actualPos * 4)
 					actualPos += step
 
 				# dgapeo
@@ -99,17 +101,19 @@ def main():
 				postingsFile.write(struct.pack('<%sI' % df, *docs))
 				postingsFile.write(struct.pack('<%sf' % df, *([1] * int(df))))
 				
+				# Cargo termino a vocabulario
+				vocabulary.insert(term, vocabularyValues)
+
 				pointer += df * 4 * 2
 				termId += 1
 
 	print "time:",time.time() - start
-	print termId
 
 # funcion para chequear que posting se creo correctamente
-def testBinaryFile(vocabulary):
+def testDgaps(vocabulary):
 	with open("binary_postings.dat", "rb") as f:
 		for term in vocabulary:
-
+			print term
 			# Me posiciono en el termino
 			f.seek(vocabulary[term]["pointer"])
 
@@ -124,30 +128,32 @@ def testBinaryFile(vocabulary):
 			bFreqs = f.read(lenDocs * 4)
 			freqs = struct.unpack('<%if' % lenDocs, bFreqs)
 
-			print freqs
+			print "docs: ",docIds
 
 # funcion para chequear que dgaps se creo correctamente
 def testDgaps(vocabulary):
-	out = []
 	with open("binary_postings.dat", "rb") as f:
 		for term in vocabulary:
+			out = []
 			f.seek(vocabulary[term]["pointer"])
 			df = vocabulary[term]["df"]
 			dgapped = 0
 			for i in range(df):
 				dgapped += struct.unpack('<I', f.read(4))[0]
 				out.append(dgapped)
-	print "Dgap: ", out
+			print term+": ", out
+
 # funcion para chequear que skip list se creo correctamente
 def testSkip(vocabulary):
-	out = []
 	with open("binary_postings.dat", "rb") as f:
 		for term in vocabulary:
+			out = []
 			for doc in vocabulary[term]["skip_list"]:
 				f.seek(vocabulary[term]["skip_list"][doc])
 				docRead = struct.unpack('<I', f.read(4))[0]
 				out.append(doc + docRead)
-	print "Skip: ", out
+
+			print term+" - Skip: ", out
 
 if __name__ == "__main__":
 	main()
