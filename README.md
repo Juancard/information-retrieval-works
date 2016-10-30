@@ -29,6 +29,8 @@ Trabajos prácticos resueltos de la cursada Recuperación de Información / Tall
 
 - [Ejercicios](https://drive.google.com/file/d/0B13cNeaiufwVaVFHMWc1bHVHYnc/view?usp=sharing) 
 - [Informe](https://drive.google.com/open?id=1FXKKwZGAf_6oXf4_H6TaGjDOMC0SJ73lc0AN1UXaRjQ)
+- [Código](tp5)
+
 
 ### Tp6 - Recuperación de Información Web y Motores de Búsqueda
 
