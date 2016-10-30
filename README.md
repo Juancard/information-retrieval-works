@@ -28,6 +28,13 @@ Trabajos prácticos resueltos de la cursada Recuperación de Información / Tall
 ### Tp5 - Modelos de Lenguaje para RI
 
 - [Ejercicios](https://drive.google.com/file/d/0B13cNeaiufwVaVFHMWc1bHVHYnc/view?usp=sharing) 
+- [Informe](https://drive.google.com/open?id=1FXKKwZGAf_6oXf4_H6TaGjDOMC0SJ73lc0AN1UXaRjQ)
+
+### Tp6 - Recuperación de Información Web y Motores de Búsqueda
+
+- [Ejercicios](https://drive.google.com/open?id=0B13cNeaiufwVUDByYzk1MEhlNFU) 
+- [Informe](https://drive.google.com/open?id=1T20G6JG6blAxD7olMB5RD1xOkPpt4nXlrtkq5V51sm0)
+- [Código](tp6)
 
 ### Corpus
 
