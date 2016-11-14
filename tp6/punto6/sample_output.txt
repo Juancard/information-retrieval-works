@@ -1,0 +1,23 @@
+Url dada:  http://www.google.com.ar/
+Links hallados: 
+http://www.google.com.ar/imghp?hl=es-419&tab=wi
+http://maps.google.com.ar/maps?hl=es-419&tab=wl
+https://play.google.com/?hl=es-419&tab=w8
+http://www.youtube.com/?gl=AR&tab=w1
+http://news.google.com.ar/nwshp?hl=es-419&tab=wn
+https://mail.google.com/mail/?tab=wm
+https://drive.google.com/?tab=wo
+https://www.google.com.ar/intl/es-419/options/
+http://www.google.com.ar/history/optout?hl=es-419
+/preferences?hl=es-419
+https://accounts.google.com/ServiceLogin?hl=es-419&passive=true&continue=http://www.google.com.ar/
+/search?site=&ie=UTF-8&q=Frederick+Banting&oi=ddle&ct=sir-frederick-bantings-125th-birthday-5698163160645632&hl=es-419&sa=X&ved=0ahUKEwjW3Ovxl6nQAhUDIZAKHdK-D7wQPQgD
+/advanced_search?hl=es-419&authuser=0
+/language_tools?hl=es-419&authuser=0
+/intl/es-419/ads/
+/services/
+https://plus.google.com/112209395112018703654
+/intl/es-419/about.html
+http://www.google.com.ar/setprefdomain?prefdom=US&sig=__TakE2H8AOspmpBdVnC73GyyUjB0%3D
+/intl/es-419/policies/privacy/
+/intl/es-419/policies/terms/
