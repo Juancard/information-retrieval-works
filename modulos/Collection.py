@@ -32,3 +32,6 @@ class Collection(object):
 
 	def getName(self):
 		return os.path.basename(os.path.normpath(self.path))
+
+	def onlyFilesName(self):		
+		return [f for f in self.content if os.path.isfile(os.path.join(self.path, f))]

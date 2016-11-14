@@ -72,6 +72,8 @@ def main():
 	print "Configuracion en: %s" % (INDEX_DIR + CONFIG_NAME)
 
 	postingsStats = indexer.postings.getStats()
+
+	# sumo los tamanos de cada archivo dentro del directorio donde se aloja el indice 
 	indexSize = sum(os.path.getsize(INDEX_DIR + f) for f in os.listdir("index_data") if os.path.isfile(INDEX_DIR + f))
 	collectionSize = sum(os.path.getsize(f) for f in collection.allFiles())
 	overhead = (indexSize / (float(collectionSize) + indexSize)) * 100

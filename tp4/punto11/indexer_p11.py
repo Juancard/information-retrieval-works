@@ -190,10 +190,14 @@ def main():
 		docs = deltaEncode(postings[p].keys())
 		freqs = [int(k) for k in postings[p].values()]
 		
-		# Comprimo y guardo
+		# Comprimo y guardo docs id
 		docs = eliaGammaCompress(docs)
-		freqs = eliaGammaCompress(freqs)
-		compressedLength["elia"] += len(docs) + len(freqs)
+		
+		# Comprimo y guardo freqs
+		# NO IMPLEMENTADO
+		freqs = freqs
+		
+		compressedLength["elia"] += len(docs)
 		postingsCompressed[p] = [docs, freqs]
 	executionTimes["elia_compress"] = time.time() - startTime
 	
@@ -207,7 +211,8 @@ def main():
 		docsGapped = eliaGammaDecompress(postingsCompressed[p][0])
 		docsDecompressed = deltaDesencode(docsGapped)
 		# Descomprimo frecuencias
-		freqsDecompressed = eliaGammaDecompress(postingsCompressed[p][1])
+		# NO IMPLEMENTADO
+		freqsDecompressed = postingsCompressed[p][1]
 		# Cargo posting descomprimida
 		for i in range(len(docsDecompressed)):
 			postings[p][docsDecompressed[i]] = freqsDecompressed[i] + 0.0
@@ -222,10 +227,12 @@ def main():
 		# Obtengo listas a comprimir
 		docs = deltaEncode(postings[p].keys())
 		freqs = [int(k) for k in postings[p].values()]
-		# Comprimo y guardo
+		# Comprimo y guardo docs id
 		docs = vbyteCompress(docs)
-		freqs = vbyteCompress(freqs)
-		compressedLength["vbyte"] += len(docs) + len(freqs)
+		# Comprimo y guardo freqs
+		# NO IMPLEMENTADO
+		freqs = freqs
+		compressedLength["vbyte"] += len(docs)
 		postingsCompressed[p] = [docs, freqs]
 	executionTimes["vbyte_compress"] = time.time() - startTime
 
@@ -239,7 +246,8 @@ def main():
 		docsGapped = vbyteDecompress(postingsCompressed[p][0])
 		docsDecompressed = deltaDesencode(docsGapped)
 		# Descomprimo frecuencias
-		freqsDecompressed = vbyteDecompress(postingsCompressed[p][1])
+		# NO IMPLEMENTADO
+		freqsDecompressed = postingsCompressed[p][1]
 		# Cargo posting descomprimida
 		for i in range(len(docsDecompressed)):
 			postings2[p][docsDecompressed[i]] = freqsDecompressed[i] + 0.0
@@ -248,8 +256,9 @@ def main():
 	# Calculo tamanos finales
 
 	# se suman los 4 bits del id de cada termino
-	compressedLength["elia"] += 4 * len(postings)
-	compressedLength["vbyte"] += 4 * len(postings)
+	# NO SE IMPLEMENTA: SOLO SE COMPRIMEN DOCS ID
+	#compressedLength["elia"] += 4 * len(postings)
+	#compressedLength["vbyte"] += 4 * len(postings)
 
 	#y paso valores a KiloBytes
 	compressedLength["elia"] /= 8.0 * 1000 
