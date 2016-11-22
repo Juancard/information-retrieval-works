@@ -16,14 +16,22 @@ def getUrl():
 		sys.exit()
 
 def main():
-	urlGiven = getUrl()
-	print "Url dada: ", urlGiven
+	todoList = {}
+	doneList = []
+	todoList[getUrl()] = []
+	while todoList and len(todoList) < 50:
+		print "tam: ", len(todoList)
+		htmlPage = urllib2.urlopen(urlGiven)
+		soup = BeautifulSoup(htmlPage)
+		links = soup.findAll('a', attrs={'href': re.compile("^http://")})
+		for l in links:
+			if l in doneList:
 
-	print "Links hallados: "
-	htmlPage = urllib2.urlopen(urlGiven)
-	soup = BeautifulSoup(htmlPage)
-	for link in soup.findAll('a'):
-	    print link.get('href')
+				if l in todoList:
+	
+	print todoList
+
+
 
 if __name__ == "__main__":
 	main()
