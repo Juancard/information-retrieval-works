@@ -37,7 +37,8 @@ def main():
 	crawled = set()
 
 	# Comienza a crawlear
-	while len(toCrawl) > 0 and len(toCrawl) < 50:
+	MAX_URLS = 50
+	while len(toCrawl) > 0 and len(toCrawl) < MAX_URLS:
 		# Tomo un link de la lista de to-do
 		parentLink = toCrawl.pop()
 		print "Visitando ", parentLink
@@ -64,10 +65,12 @@ def main():
 			linksData[parentLink]["outlinks"].add(linksData[linkCrawled]["id"])
 
 	print "-" * 50
-	print "Total paginas crawleadas:", len(toCrawl)
+	print "Total paginas crawleadas (sin repetidas):", len(toCrawl)
 	print "Paginas visitadas"
 	for l in linksData:
-		print l + ": " + "outlinks = " + str(len(linksData[l]["outlinks"]))
+		totalOut = len(linksData[l]["outlinks"])
+		if totalOut > 0:
+			print l + ": \n\t" + "id: " + str(linksData[l]["id"]) + "\n\toutlinks: " + str(totalOut)
 
 def getLinks(url, url_instance = None, n = None):
 	extractedLinks = []
