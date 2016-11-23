@@ -20,25 +20,54 @@ def getUrl():
 		sys.exit()
 
 def main():
-	toCrawl = set([getUrl()])
-	crawled = set()
-	outlinks = {}
-	while len(toCrawl) > 0 and len(toCrawl) < 50:
-		linkParent = toCrawl.pop()
-		crawled.add(linkParent)
-		outlinks[linkParent] = set()
-		print "Visitando ", linkParent
-		allLinksCrawled = getLinks(linkParent)
-		for linkCrawled in allLinksCrawled:
-			outlinks[linkParent].add(linkCrawled)
-			if not (linkCrawled in crawled or linkCrawled in toCrawl):
-				toCrawl.add(linkCrawled)
-		print len(toCrawl), "links que tenia: ",len(outlinks[linkParent])
+	# Tomo link raiz pasado por parametro
+	rootLink = getUrl()
 
+	# Inicializo variables con link root
+	urlCounter = 1 # COntador de url usado como id
+	toCrawl = set([rootLink]) # lista to-do con urls a visitar
+	linksData = { # Cada url mapea a su data correspondiente
+		rootLink: {
+			"id": urlCounter,
+			"outlinks": set()
+		}
+	}
+
+	# webs ya visitadas
+	crawled = set()
+
+	# Comienza a crawlear
+	while len(toCrawl) > 0 and len(toCrawl) < 50:
+		# Tomo un link de la lista de to-do
+		parentLink = toCrawl.pop()
+		print "Visitando ", parentLink
+
+		# Lo agrego a la lista de crawleados
+		crawled.add(parentLink)
+
+		# Itero sobre links externos
+		for linkCrawled in getLinks(parentLink):
+
+			# Es nueva URL?
+			if linkCrawled not in linksData:
+				# Nueva url, incremento contador
+				urlCounter += 1
+				# Le asigno id e inicializo outlinks
+				linksData[linkCrawled] = {
+					"id": urlCounter,
+					"outlinks": set()
+				}
+				# Nuevo link a lista to-do
+				toCrawl.add(linkCrawled)
+
+			# Agrego outlink url padre
+			linksData[parentLink]["outlinks"].add(linksData[linkCrawled]["id"])
+
+	print "-" * 50
 	print "Total paginas crawleadas:", len(toCrawl)
 	print "Paginas visitadas"
-	for l in outlinks:
-		print "Link:", l, "Cantidad de outlinks: ", len(outlinks[l])
+	for l in linksData:
+		print l + ": " + "outlinks = " + str(len(linksData[l]["outlinks"]))
 
 def getLinks(url, url_instance = None, n = None):
 	extractedLinks = []
