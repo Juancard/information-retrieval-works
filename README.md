@@ -38,6 +38,11 @@ Trabajos prácticos resueltos de la cursada Recuperación de Información / Tall
 - [Informe](https://drive.google.com/open?id=1T20G6JG6blAxD7olMB5RD1xOkPpt4nXlrtkq5V51sm0)
 - [Código](tp6)
 
+### Presentación de Paper
+- [Paper](https://www.dcc.uchile.cl/~gnavarro/ps/spire12.5.pdf) 
+- [Resumen](https://drive.google.com/open?id=1byEf1SBKRYvjq3C-6l2VbKxMAqLsR-xEhuD_Ri7h_g0)
+- [Presentación](https://drive.google.com/open?id=1V3QnHHkHEwJBbmr2Z-6blUc321aC6Y7_lvYTWf4Em2M)
+
 ### Corpus
 
 - [Colección T1-GR](http://www.tyr.unlu.edu.ar/tallerIR/2014/data/T1-gr.tar.gz)
