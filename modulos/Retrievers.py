@@ -307,22 +307,16 @@ class VectorRetriever(object):
 		return rank
 
 	def getScalarProductRank(self, query):
-		scalarProduct = {}
-		postings = {}
+		scores = {}
 
 		for t in query:
 			termId = self.vocabulary.getId(t)
 			post = self.postings.getPosting(termId)
-			postings[t] = post
+			for d in post:
+				if d not in scores: scores[d] = 0.0 
+				scores[d] += post[d] * query[t]
 
-		for d in self.documents:
-			sp = 0.0
-			for t in postings:
-				if d in postings[t]:
-					sp += postings[t][d] * query[t]
-			if sp > 0.0:
-				scalarProduct[d] = sp
-		return scalarProduct
+		return scores
 
 	def getCosineSimilarityRank(self, scalarProductRank, qNorm):
 		cosineSimilarity = {}
