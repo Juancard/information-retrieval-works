@@ -243,12 +243,9 @@ class VectorRetriever(object):
 			# Guardo postings de cada término
 			for t in queries[q]:
 				termId = self.vocabulary.getId(t)
-				postings[termId] = self.postings.getPosting(termId)
-			
-			# Acumulo score
-			for p in postings:
-				for doc in postings[p]:
-					rank[q][doc] += postings[p][doc]
+				postingsList = self.postings.getPosting(termId)
+				for doc in postingsList:
+					rank[q][doc] += postingsList[doc]
 
 			# Ordeno por frecuencia y doc y devuelvo tuplas (doc, score)
 			orderedList = sorted(rank[q].items(), key = lambda l:( l[1], l[0]), reverse=True)[0:topk]
