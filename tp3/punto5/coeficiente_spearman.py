@@ -1,7 +1,4 @@
-
 # coding: utf-8
-
-# In[1]:
 
 import csv
 import pandas as pd
@@ -78,7 +75,7 @@ def main():
         tops[k] = ranksConcat.reset_index().groupby(["Id query"]).apply(sp)
 
     cs = pd.concat([tops[k] for k in sorted(tops)], axis=1,join="outer")
-    cs.columns = ["top%d" % k for k in sorted(tops)]
+    cs.columns = ["Top %d" % k for k in sorted(tops)]
 
     cs.to_csv("coeficiente_spearman.csv")
 
