@@ -100,7 +100,7 @@ def sumSquare(vector):
 	out = 0.0
 	for value in vector:
 		out += vector[value] ** 2.0
-	return out
+	return out ** 0.5
 
 def cosineSimilarity(vector1, vector2):
 	dp = dotProduct(vector1, vector2)

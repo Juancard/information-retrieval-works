@@ -143,7 +143,7 @@ def getEvaluation(retrieved, relevant):
 		evaluation[q]["stats"] = getStats(evaluation[q]["rp"], relevant[q])
 	return evaluation
 
-# Se toman todas las evaluaciones de las queries 
+# Se toma la evaluacion de cada query
 # y se genera una evaluación general
 def getGeneralEvaluation(e):
 	def getGeneralStats(e):
