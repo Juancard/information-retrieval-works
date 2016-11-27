@@ -40,32 +40,32 @@ class BooleanRetriever(object):
 		# SI NO HAY TERMINOS DEVUELVO CONJUNTO VACIO
 		if not terms: return set()
 
-		#Si alguno de los terminos no se encuentra en el vocabulario
-		# se devuelve conjunto vacio
+		# Voy guardando df (tamano de posting), 
+		# para intersecar postings de la mas corta a la mas larga
+		postingsLength = {}
 		for t in terms:
+			# Si alguno de los terminos no se encuentra en el vocabulario
+			# se devuelve conjunto vacio
 			if t not in self.vocabulary.content: return set()
+			else: postingsLength[self.vocabulary.getId(t)] = self.vocabulary.getDF(t)
 
+		# Ordeno por tamano de posting
+		sortedTermsId = sorted(postingsLength, key=postingsLength.get, reverse=True)
+
+		# Si hay skip lists, las aprovecho
 		if self.skipLists:
-			if len(terms) > 1:
-				t1 = self.vocabulary.getId(list(terms)[0])
-				t2 = self.vocabulary.getId(list(terms)[1])
-				return self.postings.intersectWithSkip(t1, t2)
+			if len(postingsLength) > 1:
+				return self.postings.intersectWithSkip(sortedTermsId[0], sortedTermsId[1])
 		
-		# Si hay funcion intersect la llamo, caso contrario ejecuto la propia
+		# Si hay funcion intersect en objeto posting la llamo, 
+		# caso contrario ejecuto la propia
 		try:
-			t1 = self.vocabulary.getId(list(terms)[0])
-			t2 = self.vocabulary.getId(list(terms)[1])
-			return self.postings.intersect(t1, t2)
+			return self.postings.intersect(sortedTermsId[0], sortedTermsId[1])
 		except AttributeError, KeyError:
-			out = set(self.documents)
-
-			for t in terms:
-				if t in self.vocabulary.content:
-					termId = self.vocabulary.getId(t)
-					out &= set(self.postings.getDocsIdFromTerm(termId))
-				else:
-					return set()
-
+			# Inicializo conjunto de salida con posting mas pequena
+			out = set(self.postings.getDocsIdFromTerm(sortedTermsId[0]))
+			for tId in sortedTermsId:
+				out &= set(self.postings.getDocsIdFromTerm(tId))
 			return out
 
 	def union(self, terms):
@@ -318,8 +318,9 @@ class VectorRetriever(object):
 	def getCosineSimilarityRank(self, scalarProductRank, qNorm):
 		cosineSimilarity = {}
 		for d in scalarProductRank:
-			if (self.documentsNorm[d] * qNorm) != 0.0:
-				cosineSimilarity[d] = scalarProductRank[d] / (self.documentsNorm[d] * qNorm)
+			divider = self.documentsNorm[d] * qNorm
+			if divider != 0.0:
+				cosineSimilarity[d] = scalarProductRank[d] / divider
 		return cosineSimilarity
 
 	def getJaccardRank(self, scalarProductRank, qNorm):
