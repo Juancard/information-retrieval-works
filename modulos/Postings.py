@@ -357,11 +357,11 @@ class BinaryPostings(object):
 		out = set()
 
 		p1 = self.termToPointer[t1]["pointer"]
-		endP1 = p1 + (self.termToPointer[t1]["lenDocs"] * 4)
+		p1End = p1 + (self.termToPointer[t1]["lenDocs"] * 4)
 		p2 = self.termToPointer[t2]["pointer"]
-		endP2 = p2 + (self.termToPointer[t2]["lenDocs"] * 4)
+		p2End = p2 + (self.termToPointer[t2]["lenDocs"] * 4)
 		with open(self.path, "rb") as f:
-			while p1 < endP1 and p2 < endP2:
+			while p1 < p1End and p2 < p2End:
 				f.seek(p1)
 				docT1 = struct.unpack("<I", f.read(4))[0]
 				f.seek(p2)
@@ -376,7 +376,8 @@ class BinaryPostings(object):
 							if skipDoc > docT1:
 								p1 = self.skipLists[t1][skipDoc]
 								p1HasChanged = True
-						else: break
+						else:
+							break
 					if not p1HasChanged: p1 += 4
 				else:
 					p2HasChanged = False
